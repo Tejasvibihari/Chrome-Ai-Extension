@@ -11,6 +11,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Auth2 from './pages/Auth2';
 import Signin from './components/Signin';
 import { useSelector } from 'react-redux';
+import Home from './pages/Home';
 
 // Component to load and display the GLTF model
 const Model = (props) => {
@@ -100,8 +101,13 @@ export default function App() {
 
   return (
     <>
-      <div className='bg-secondary-200 p-4'>
-        {user.email ? `Hello ${user.email}` : <Auth />}
+      <div className='bg-secondary-100'>
+        <div className=''>
+          <Home />
+        </div>
+        <div className='p-4'>
+          {/* {user.email ? `Hello ${user.email}` : <Auth />} */}
+        </div>
       </div>
     </>
   );

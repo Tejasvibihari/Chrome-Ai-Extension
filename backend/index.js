@@ -2,10 +2,14 @@ import express from 'express';
 import dotenv from "dotenv";
 import OpenAI from 'openai';
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import cors from 'cors';
+
 dotenv.config();
 const app = express();
 const port = process.env.PORT;
 app.use(express.json());
+
+app.use(cors());
 
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
@@ -39,15 +43,17 @@ app.get('/api/chat', async (req, res) => {
 });
 
 
-app.get('/api/chat/gemini', async (req, res) => {
+app.post('/api/chat/gemini', async (req, res) => {
+    const { prompt } = req.body;
+    console.log(prompt);
     try {
-        const prompt = "Difference Between Input and output device with parameter";
+        // const prompt = "Difference Between Input and output device with parameter";
 
         const result = await model.generateContent(prompt);
         console.log(result.response.text());
         console.log(result);
-
         res.json(result);
+
     } catch (error) {
         console.error(error);
         res.status(500).send('Something went wrong!');
