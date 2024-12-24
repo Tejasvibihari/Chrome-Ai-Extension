@@ -6,7 +6,11 @@ import { PhoneForwarded, Download } from 'lucide-react';
 import { useRef } from 'react';
 import { useFrame, useThree, Canvas } from '@react-three/fiber';
 import Cube from './components/Signin';
-
+import Auth from './pages/Auth';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Auth2 from './pages/Auth2';
+import Signin from './components/Signin';
+import { useSelector } from 'react-redux';
 
 // Component to load and display the GLTF model
 const Model = (props) => {
@@ -48,6 +52,8 @@ export const SphereComponent = ({ radius, color, initialPosition }) => {
 };
 
 export default function App() {
+  const user = useSelector(state => state.auth.user);
+
   const [scrapedData, setScrapedData] = useState('');
   const [tabUrl, setTabUrl] = useState('');
   const [wdata, setWdata] = useState('');
@@ -94,17 +100,17 @@ export default function App() {
 
   return (
     <>
-
-
+      <div className='bg-secondary-200 p-4'>
+        {user.email ? `Hello ${user.email}` : <Auth />}
+      </div>
     </>
   );
 }
 
 
-
-// <Canvas>
-//   <ambientLight position={[0, 0, 5]} />
-//   {/* {spheres.map((sphere, index) => (
+//  <Canvas>
+//         <ambientLight position={[0, 0, 5]} />
+//         {/* {spheres.map((sphere, index) => (
 //             <SphereComponent
 //               key={index}
 //               radius={sphere.radius}
@@ -113,26 +119,23 @@ export default function App() {
 //             />
 //           ))} */}
 
-// </Canvas>
+//       </Canvas>
 
 
 
-// <div className='p-4 bg-red-400 text-white h-screen flex md:flex-row flex-col justify-center items-center'>
+//       <div className='p-4 bg-red-400 text-white h-screen flex md:flex-row flex-col justify-center items-center'>
 
-//   <br />
+//         <br />
+//         <Canvas className="h-full">
+//           <ambientLight position={[0, 0, 5]} intensity={10} />
+//           <PerspectiveCamera makeDefault position={[0, 5, 15]} />
+//           {/* <OrbitControls /> */}
+//           <Model position={[0, -3, 0]} scale={2} />
+//         </Canvas>
 
+//         <div>
+//           {scrapedData ? scrapedData : 'Loading...'}
 
-
-//   <Canvas className="h-full">
-//     <ambientLight position={[0, 0, 5]} intensity={10} />
-//     <PerspectiveCamera makeDefault position={[0, 5, 15]} />
-//     {/* <OrbitControls /> */}
-//     <Model position={[0, -3, 0]} scale={2} />
-//   </Canvas>
-
-//   <div>
-//     {scrapedData ? scrapedData : 'Loading...'}
-
-//     <Cube />
-//   </div>
-// </div>
+//           <Cube />
+//         </div>
+//       </div>
