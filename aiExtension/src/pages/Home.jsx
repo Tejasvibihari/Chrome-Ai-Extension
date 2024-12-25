@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Send } from 'lucide-react';
+import { Send, Cog } from 'lucide-react';
 import client from '../service/axioxClient';
 import Cube from '../components/Cube';
 import { useSelector } from 'react-redux';
@@ -138,12 +138,15 @@ export default function Home() {
                     <div className='p-3  text-white font-kanit text-lg'>
                         Hello <span className='text-primary-100'>Tejasvi Bihari</span>
                     </div>
-                    <div className='p-3'>
-                        <select className='w-32 p-1 font-kanit rounded-full focus:outline-none focus:shadow-sm shadow-sm shadow-primary-100 text-white bg-secondary-100'>
+                    <div className='p-3 flex flex-row items-center justify-center space-x-2'>
+                        <select className=' w-24 p-1 font-kanit rounded-full focus:outline-none focus:shadow-sm shadow-sm shadow-primary-100 text-white bg-secondary-100'>
                             <option>Auto</option>
                             <option>GPT</option>
                             <option>Gemini</option>
                         </select>
+                        <div className='border border-secondary-200 p-1 rounded-md shadow-sm shadow-primary-100 cursor-pointer'>
+                            <Cog className='text-gray-400' />
+                        </div>
                     </div>
 
                 </div>
