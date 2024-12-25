@@ -14,10 +14,17 @@ export const authSlice = createSlice({
             state.loading = true;
             state.user = action.payload;
         },
-        signin: (state, action) => {
+        siginStart: (state) => {
             state.loading = true;
+        },
+        signinSuccess: (state, action) => {
+            state.loading = false;
             state.user = action.payload;
-        }
+        },
+        siginFailure: (state) => {
+            state.loading = false;
+        },
+
     },
 })
 

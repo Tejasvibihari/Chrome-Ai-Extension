@@ -1,15 +1,7 @@
 import React, { useState, useEffect } from 'react';
-
-
-import { useGLTF, PerspectiveCamera, OrbitControls } from "@react-three/drei";
-import { PhoneForwarded, Download } from 'lucide-react';
 import { useRef } from 'react';
 import { useFrame, useThree, Canvas } from '@react-three/fiber';
-import Cube from './components/Signin';
 import Auth from './pages/Auth';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Auth2 from './pages/Auth2';
-import Signin from './components/Signin';
 import { useSelector } from 'react-redux';
 import Home from './pages/Home';
 
@@ -105,9 +97,9 @@ export default function App() {
         <div className=''>
           <Home />
         </div>
-        <div className='p-4'>
-          {/* {user.email ? `Hello ${user.email}` : <Auth />} */}
-        </div>
+        {/* <div className='p-4'> */}
+        {/* {user.email ? `Hello ${user.email}` : <Auth />} */}
+        {/* </div> */}
       </div>
     </>
   );

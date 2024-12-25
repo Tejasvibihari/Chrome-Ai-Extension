@@ -1,23 +1,79 @@
-import React, { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Send } from 'lucide-react';
-import axios from 'axios';
 import client from '../service/axioxClient';
+import Cube from '../components/Cube';
+import { useSelector } from 'react-redux';
+import { promptFailure, promptStart, promptSuccess } from '../app/Prompt/PromptSlice';
+import { useDispatch } from 'react-redux';
+import Markdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
+
+
+
+function useTypewriterEffect(text, speed = 50) {
+    const [displayedText, setDisplayedText] = useState('');
+
+    useEffect(() => {
+        let index = 0;
+        const interval = setInterval(() => {
+            setDisplayedText(text.slice(0, index));
+            index++;
+            if (index > text.length) {
+                clearInterval(interval);
+            }
+        }, speed);
+        return () => clearInterval(interval);
+    }, [text, speed]);
+
+    return displayedText;
+}
 
 export default function Home() {
+    const loading = useSelector(state => state.prompt.loading)
+    const data = useSelector(state => state.prompt.data)
+    const dispatch = useDispatch();
     const [prompt, setPrompt] = useState('')
     const [response, setResponse] = useState("");
+    const [loadingMessage, setLoadingMessage] = useState('');
+    const displayedLoadingMessage = useTypewriterEffect(loadingMessage, 50);
+    const [fadeIn, setFadeIn] = useState(false);
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        dispatch(promptStart());
+        const messages = [
+            'Preparing your insights...',
+            'Unveiling patterns...',
+            'Crafting a thoughtful response...',
+            'Almost there, perfection takes time...'
+        ];
+
+        let messageIndex = 0;
+        const interval = setInterval(() => {
+            setLoadingMessage(messages[messageIndex]);
+            messageIndex = (messageIndex + 1) % messages.length;
+        }, 3000);
+
         try {
             const response = await client.post('/api/chat/gemini', { prompt })
-            const text = response.data.response.candidates[0].content.parts[0].text;
-            setResponse(text);
-            console.log(text);
+            setPrompt('');
+            // const text = response.data.response.candidates[0].content.parts[0].text;
+            setResponse(response.data);
+            dispatch(promptSuccess(response.data));
+            console.log(response.data)
+            setFadeIn(true);
+            setTimeout(() => setFadeIn(false), 3000);
+
         } catch (error) {
+            dispatch(promptFailure());
             console.log(error);
+        } finally {
+            clearInterval(interval);
+            setLoadingMessage('');
         }
     }
-
+    console.log(response, "response")
+    const containsTable = /\|.*\|/.test(response);
     return (
         <>
             <style jsx>{`
@@ -35,21 +91,92 @@ export default function Home() {
                 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
                     background: #555;
                 }
+                .fade-in {
+                    animation: fadeIn 3s forwards; /* Adjust the duration of the fade-in effect */
+                }
+                @keyframes fadeIn {
+                    from {
+                        opacity: 0;
+                    }
+                    to {
+                        opacity: 1;
+                    }
+                }
+                .fade-out {
+                    animation: fadeOut 3s forwards; /* Adjust the duration of the fade-out effect */
+                }
+                @keyframes fadeOut {
+                    from {
+                        opacity: 1;
+                    }
+                    to {
+                        opacity: 0;
+                    }
+                }
+                .styled-table {
+                    overflow-x: auto;
+                    padding: 10px;
+                    border-radius: 5px;
+                }
+                .styled-table table {
+                    width: 100%;
+                    border-collapse: collapse;
+                }
+                .styled-table th, .styled-table td {
+                    border: 1px solid #ddd;
+                    padding: 8px;
+                    border-color: black; 
+                }
+                .styled-table th {
+                    background-color: #212121;
+                    color: white;
+                    text-align: left;
+                }
             `}</style>
-            <div className='w-full h-screen flex flex-col'>
-                <div className='p-3 bg-secondary-200 text-white font-kanit text-lg'>
-                    Hello <span className='text-primary-100'>Tejasvi Bihari</span>
+            <div className='w-full h-[100vh] flex flex-col'>
+                <div className='bg-secondary-200 flex flex-row items-center justify-between'>
+                    <div className='p-3  text-white font-kanit text-lg'>
+                        Hello <span className='text-primary-100'>Tejasvi Bihari</span>
+                    </div>
+                    <div className='p-3'>
+                        <select className='w-32 p-1 font-kanit rounded-full focus:outline-none focus:shadow-sm shadow-sm shadow-primary-100 text-white bg-secondary-100'>
+                            <option>Auto</option>
+                            <option>GPT</option>
+                            <option>Gemini</option>
+                        </select>
+                    </div>
+
                 </div>
                 <div className='flex-grow p-4 overflow-auto custom-scrollbar'>
                     {/* Insert your additional content here */}
-                    {response}
+                    <div>
+                        {response ? (
+                            containsTable ? (
+                                <div className={`styled-table ${fadeIn ? 'fade-in' : ''}`}>
+                                    <Markdown remarkPlugins={[remarkGfm]}>{response}</Markdown>
+                                </div>
+                            ) : (
+                                <p className={fadeIn ? 'fade-in' : ''}>
+                                    <Markdown remarkPlugins={[remarkGfm]}>{response}</Markdown>
+                                </p>
+                            )
+                        ) : (
+                            <Cube />
+                        )}
+                    </div>
+                    {loading &&
+                        <p className='flex items-center justify-center font-kanit text-gray-400'>
+                            {displayedLoadingMessage}
+                        </p>
+                    }
+
                 </div>
-                <div className='flex items-center justify-center space-x-1 p-2 bg-secondary-200'>
+                <form className='flex items-center justify-center space-x-1 p-2 bg-secondary-200'>
                     <input type='text' onChange={(e) => setPrompt(e.target.value)} value={prompt} placeholder='How Can I Help You ?' className='w-full p-1 rounded-md bg-secondary-100 focus:outline-none focus:shadow-sm focus:shadow-primary-100 text-white' />
                     <button onClick={handleSubmit} className='p-2 border-primary-100 border rounded-full bg-primary-200'>
                         <Send size={18} />
                     </button>
-                </div>
+                </form>
             </div>
         </>
     )

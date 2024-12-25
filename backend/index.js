@@ -18,7 +18,9 @@ const openai = new OpenAI({
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-app.get('/api/chat', async (req, res) => {
+app.post('/api/chat', async (req, res) => {
+    const { prompt } = req.body;
+    console.log(prompt);
     try {
         const completion = await openai.chat.completions.create({
             model: "gpt-4o-mini",
@@ -28,14 +30,14 @@ app.get('/api/chat', async (req, res) => {
                     content: [
                         {
                             "type": "text",
-                            "text": "Difference Between Input and output device with parameter"
+                            "text": prompt
                         }
                     ]
                 },
             ],
         });
-        console.log(completion)
-        res.json(completion);
+        console.log(completion.choices[0].message.content)
+        res.json(completion.choices[0].message.content);
     } catch (error) {
         console.error(error);
         res.status(500).send('Something went wrong!');
@@ -52,7 +54,7 @@ app.post('/api/chat/gemini', async (req, res) => {
         const result = await model.generateContent(prompt);
         console.log(result.response.text());
         console.log(result);
-        res.json(result);
+        res.json(result.response.text());
 
     } catch (error) {
         console.error(error);
