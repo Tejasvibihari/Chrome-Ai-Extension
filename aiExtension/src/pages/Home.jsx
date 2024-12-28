@@ -7,6 +7,7 @@ import { promptFailure, promptStart, promptSuccess } from '../app/Prompt/PromptS
 import { useDispatch } from 'react-redux';
 import Markdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import Sidebar from '../components/Sidebar';
 
 
 
@@ -37,6 +38,14 @@ export default function Home() {
     const [loadingMessage, setLoadingMessage] = useState('');
     const displayedLoadingMessage = useTypewriterEffect(loadingMessage, 50);
     const [fadeIn, setFadeIn] = useState(false);
+
+    // Setting Button Drop Down 
+    const [isSidebarVisible, setSidebarVisible] = useState(false);
+
+    const toggleSidebar = () => {
+        setSidebarVisible(!isSidebarVisible);
+    };
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -132,7 +141,21 @@ export default function Home() {
                     color: white;
                     text-align: left;
                 }
+                    .transition-transform {
+                    transition: transform 0.3s ease-in-out;
+                }
+                .translate-y-0 {
+                    transform: translateY(0);
+                }
+                .-translate-y-full {
+                    transform: translateY(-100%);
+                }
             `}</style>
+            {isSidebarVisible && (
+                <div className={`fixed top-0 left-0 w-full transition-transform z-50 duration-300 ${isSidebarVisible ? 'translate-y-0' : '-translate-y-full'}`}>
+                    <Sidebar toggleSidebar={toggleSidebar} />
+                </div>
+            )}
             <div className='w-full h-[100vh] flex flex-col'>
                 <div className='bg-secondary-200 flex flex-row items-center justify-between'>
                     <div className='p-3  text-white font-kanit text-lg'>
@@ -145,7 +168,7 @@ export default function Home() {
                             <option>Gemini</option>
                         </select>
                         <div className='border border-secondary-200 p-1 rounded-md shadow-sm shadow-primary-100 cursor-pointer'>
-                            <Cog className='text-gray-400' />
+                            <Cog onClick={toggleSidebar} className='text-gray-400' />
                         </div>
                     </div>
 
@@ -164,7 +187,7 @@ export default function Home() {
                                 </p>
                             )
                         ) : (
-                            <Cube />
+                            <Cube className="z-10" />
                         )}
                     </div>
                     {loading &&
@@ -174,12 +197,18 @@ export default function Home() {
                     }
 
                 </div>
-                <form className='flex items-center justify-center space-x-1 p-2 bg-secondary-200'>
-                    <input type='text' onChange={(e) => setPrompt(e.target.value)} value={prompt} placeholder='How Can I Help You ?' className='w-full p-1 rounded-md bg-secondary-100 focus:outline-none focus:shadow-sm focus:shadow-primary-100 text-white' />
-                    <button onClick={handleSubmit} className='p-2 border-primary-100 border rounded-full bg-primary-200'>
-                        <Send size={18} />
-                    </button>
+                <form className='p-2 bg-secondary-200 flex items-center justify-center flex-col '>
+                    <div className='flex items-center justify-center space-x-1 w-full'>
+                        <input type='text' onChange={(e) => setPrompt(e.target.value)} value={prompt} placeholder='How Can I Help You ?' className='w-full p-1 rounded-md bg-secondary-100 focus:outline-none focus:shadow-sm focus:shadow-primary-100 text-white' />
+                        <button onClick={handleSubmit} className='p-2 border-primary-100 border rounded-full bg-primary-200'>
+                            <Send size={18} />
+                        </button>
+                    </div>
+                    <span className='text-xs text-gray-400 font-kanit'>
+                        Ai can make mistakes, so double-check it
+                    </span>
                 </form>
+
             </div>
         </>
     )

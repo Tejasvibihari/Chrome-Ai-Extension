@@ -30,7 +30,7 @@ function RotatingCube() {
 
 export default function Cube() {
     return (
-        <div className='flex flex-col items-center justify-center h-[70vh]'>
+        <div className='flex flex-col items-center justify-center h-[70vh] z-10'>
             <span className='font-kanit text-white text-2xl flex items-center justify-center'>
                 What can I help with?
             </span>

@@ -2,3 +2,16 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+.transition-transform {
+    transition: transform 0.3s ease-in-out;
+}
+
+.translate-y-0 {
+    transform: translateY(0);
+}
+
+.-translate-y-full {
+    transform: translateY(-100%);
+}
