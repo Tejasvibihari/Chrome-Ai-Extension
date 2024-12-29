@@ -3,6 +3,9 @@ import dotenv from "dotenv";
 import OpenAI from 'openai';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import cors from 'cors';
+import mongoose from 'mongoose';
+
+import authRouter from './router/authRoute.js';
 
 dotenv.config();
 const app = express();
@@ -10,6 +13,15 @@ const port = process.env.PORT;
 app.use(express.json());
 
 app.use(cors());
+
+// Mongoose Connection 
+mongoose.connect(process.env.MONGODB_URI)
+    .then(() => {
+        console.log("Connected to MongoDB");
+    })
+    .catch((error) => {
+        console.log(error);
+    });
 
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
@@ -67,7 +79,7 @@ app.post('/api/chat/gemini', async (req, res) => {
 app.get('/', (req, res) => {
     res.send('Hello World!');
 });
-
+app.use("/api/v0/auth", authRouter);
 
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
