@@ -23,6 +23,7 @@ mongoose.connect(process.env.MONGODB_URI)
         console.log(error);
     });
 
+
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
