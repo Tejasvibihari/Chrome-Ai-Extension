@@ -2,7 +2,6 @@ import User from "../model/userModel.js";
 import bcrypt from "bcrypt";
 import { sendMail } from "../utils/mailer.js";
 import crypto from "crypto";
-import emailVerificationTemplate from "../utils/verifyEmailTemplet.js";
 
 
 export const checkUserName = async (req, res) => {
@@ -89,14 +88,29 @@ export const Register = async (req, res) => {
         res.json({ message: "Something went wrong!", error });
     }
 }
-export const verifyEmail = async (req, res) => {
-    try {
 
+export const verifyEmail = async (req, res) => {
+    const { userName, otp, _id } = req.query;
+    try {
+        const user = await User.findById(_id);
+        const otpMatch = user.verificationOtp === otp;
+        const otpExpired = new Date() - user.otpCreatedAt > 24 * 60 * 60 * 1000;
+        if (otpExpired) {
+            return res.status(400).json({ message: "Link expired!" });
+        }
+        if (!otpMatch) {
+            return res.status(400).json({ message: "Invalid OTP!" });
+        }
+        if (otpMatch) {
+            await User.findByIdAndUpdate(_id, { isVerified: true });
+            return res.status(200).json({ message: "Email verified successfully!" });
+        }
     } catch (error) {
         console.log(error);
-        res.status(500).res.json({ message: "Something went wrong!", error });
+        return res.status(500).json({ message: "Something went wrong!", error });
     }
 }
+
 export const Login = async (req, res) => {
     const { email, password } = req.body;
     try {
