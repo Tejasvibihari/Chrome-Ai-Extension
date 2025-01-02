@@ -41,10 +41,16 @@ export default function Home() {
 
     // Setting Button Drop Down 
     const [isSidebarVisible, setSidebarVisible] = useState(false);
+    const [chat, setChat] = useState(false);
+    const [fullPageScan, setFullPageScan] = useState(false);
+    const [viewScan, setViewScan] = useState(false);
+    const [socialMedia, setSocialMedia] = useState(false);
+
 
     const toggleSidebar = () => {
         setSidebarVisible(!isSidebarVisible);
     };
+
 
 
     const handleSubmit = async (e) => {
@@ -153,7 +159,17 @@ export default function Home() {
             `}</style>
             {isSidebarVisible && (
                 <div className={`fixed top-0 left-0 w-full transition-transform z-50 duration-300 ${isSidebarVisible ? 'translate-y-0' : '-translate-y-full'}`}>
-                    <Sidebar toggleSidebar={toggleSidebar} />
+                    <Sidebar
+                        toggleSidebar={toggleSidebar}
+                        chat={chat}
+                        setChat={setChat}
+                        fullPageScan={fullPageScan}
+                        setFullPageScan={setFullPageScan}
+                        viewScan={viewScan}
+                        setViewScan={setViewScan}
+                        socialMedia={socialMedia}
+                        setSocialMedia={setSocialMedia}
+                    />
                 </div>
             )}
             <div className='w-full h-[100vh] flex flex-col'>
@@ -190,10 +206,16 @@ export default function Home() {
                             <Cube className="z-10" />
                         )}
                     </div>
-                    {loading &&
+                    {loading ?
                         <p className='flex items-center justify-center font-kanit text-gray-400'>
                             {displayedLoadingMessage}
                         </p>
+                        :
+                        <div className='flex items-center justify-center'>
+                            <button className='bg-primary-100 rounded-sm p-2 px-3 font-kanit border-primary-100 hover:border-white hover:border-1 hover:bg-white hover:text-primary-200'>
+                                Start Magic
+                            </button>
+                        </div>
                     }
 
                 </div>

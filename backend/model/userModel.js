@@ -35,7 +35,8 @@ const userSchema = new mongoose.Schema({
     },
     otpCreatedAt: {
         type: Date,
-    }
+    },
+    chat: { type: mongoose.Schema.Types.ObjectId, ref: 'Chat' },
 })
 
 const User = mongoose.model('User', userSchema);

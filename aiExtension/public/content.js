@@ -5,8 +5,8 @@ function scrapePage() {
 
     const data = Array.from(document.querySelectorAll('p')).map(p => p.textContent);
     const hello = Array.from(document.querySelectorAll('span')).map(p => p.textContent);
-    console.log("Hello from content.js", data);
-    console.log("Hello from content.js", hello);
+    // console.log("Hello from content.js", data);
+    // console.log("Hello from content.js", hello);
     // console.log('Tab URL from contentjs line number 5:', tabUrl); // Log the URL of the tab
     const textContent = "Content Js is working";
     // console.log('Tab Data from contentjs line number 6:', wholeData.getElementsByTagName('body')); // Log the URL of the tab// Log the URL of the tab

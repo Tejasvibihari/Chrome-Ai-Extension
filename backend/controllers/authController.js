@@ -114,15 +114,16 @@ export const verifyEmail = async (req, res) => {
 export const Login = async (req, res) => {
     const { email, password } = req.body;
     try {
-        const cehckUser = await User.findOne({ email });
+        const checkUser = await User.findOne({ email });
         const checkUserName = await User.findOne({ userName });
-        if (!cehckUser || checkUserName) {
-            return res.status(400).json({ message: "Username or Email Id Not Found" });
+        if (!checkUser || checkUserName) {
+            return res.status(400).json({ message: "Account Not Found" });
         }
-        const checkPassword = bcrypt.compare(password, cehckUser.password);
+        const checkPassword = bcrypt.compare(password, checkUser.password);
         if (!checkPassword) {
             return res.status(400).json({ message: "Invalid credentials!" });
         }
+        return res.status(200).json({ message: "Login successful!", user: checkUser });
     } catch (error) {
         console.log(error);
         res.json({ message: "Something went wrong!", error });
