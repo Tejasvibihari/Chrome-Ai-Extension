@@ -33,11 +33,17 @@ export default function Home() {
     const loading = useSelector(state => state.prompt.loading)
     const data = useSelector(state => state.prompt.data)
     const dispatch = useDispatch();
-    const [prompt, setPrompt] = useState('')
+    const [request, setRequest] = useState({});
     const [response, setResponse] = useState("");
+    const [prompt, setPrompt] = useState('');
+    const [model, setModel] = useState('Auto');
+
     const [loadingMessage, setLoadingMessage] = useState('');
+
+    // Response Show Case 
     const displayedLoadingMessage = useTypewriterEffect(loadingMessage, 50);
     const [fadeIn, setFadeIn] = useState(false);
+
 
     // Setting Button Drop Down 
     const [isSidebarVisible, setSidebarVisible] = useState(false);
@@ -51,7 +57,64 @@ export default function Home() {
         setSidebarVisible(!isSidebarVisible);
     };
 
+    // Handle Magic Button 
+    // document.getElementById('magicButton').addEventListener('click', () => {
+    //     console.log("Magic Button Clicked");
+    //     chrome.runtime.sendMessage({ action: "startScripting" });
+    // })
+    // useEffect(() => {
+    //     const magicButton = document.getElementById('magicButton');
 
+    //     if (magicButton) {
+    //         magicButton.addEventListener('click', () => {
+    //             console.log("Magic Button Clicked");
+    //             chrome.runtime.sendMessage({ action: "startScripting" });
+    //         });
+    //     }
+
+    //     return () => {
+    //         if (magicButton) {
+    //             magicButton.removeEventListener('click', () => {
+    //                 console.log("Magic Button Clicked");
+    //                 chrome.runtime.sendMessage({ action: "startScripting" });
+    //             });
+    //         }
+    //     };
+    // }, []);
+    useEffect(() => {
+        const magicButton = document.getElementById('magicButton');
+        if (magicButton) {
+            magicButton.addEventListener('click', startScraping);
+        }
+
+        return () => {
+            if (magicButton) {
+                magicButton.removeEventListener('click', startScraping);
+            }
+        };
+
+    }, []);
+    useEffect(() => {
+        const createRequest = () => {
+            setRequest({
+                model,
+                type: "chat",
+                prompt: prompt
+            });
+        }
+        createRequest();
+    }, [prompt, model]);
+
+    const startScraping = async () => {
+        console.log("Magic Button Clicked");
+        chrome.runtime.sendMessage({ action: "startScraping" }, (response) => {
+            if (response.success) {
+                console.log("Scraping started successfully");
+            } else {
+                console.error("Scraping failed", response.error);
+            }
+        });
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -70,7 +133,8 @@ export default function Home() {
         }, 3000);
 
         try {
-            const response = await client.post('/api/chat/gemini', { prompt })
+            console.log(request)
+            const response = await client.post('/api/v0/chat/gpt-4o-mini', request)
             setPrompt('');
             // const text = response.data.response.candidates[0].content.parts[0].text;
             setResponse(response.data);
@@ -87,7 +151,7 @@ export default function Home() {
             setLoadingMessage('');
         }
     }
-    console.log(response, "response")
+
     const containsTable = /\|.*\|/.test(response);
     return (
         <>
@@ -178,10 +242,13 @@ export default function Home() {
                         Hello <span className='text-primary-100'>Tejasvi Bihari</span>
                     </div>
                     <div className='p-3 flex flex-row items-center justify-center space-x-2'>
-                        <select className=' w-24 p-1 font-kanit rounded-full focus:outline-none focus:shadow-sm shadow-sm shadow-primary-100 text-white bg-secondary-100'>
-                            <option>Auto</option>
-                            <option>GPT</option>
-                            <option>Gemini</option>
+                        <select
+                            onChange={(e) => setModel(e.target.value)}
+                            className=' w-28 p-1 font-kanit rounded-full focus:outline-none focus:shadow-sm shadow-sm shadow-primary-100 text-white bg-secondary-100'>
+                            <option value="Auto">Auto</option>
+                            <option value="gpt">GPT</option>
+                            <option value="Gemini">Gemini</option>
+                            <option value="Deepseek">Deepseek</option>
                         </select>
                         <div className='border border-secondary-200 p-1 rounded-md shadow-sm shadow-primary-100 cursor-pointer'>
                             <Cog onClick={toggleSidebar} className='text-gray-400' />
@@ -212,7 +279,7 @@ export default function Home() {
                         </p>
                         :
                         <div className='flex items-center justify-center'>
-                            <button className='bg-primary-100 rounded-sm p-2 px-3 font-kanit border-primary-100 hover:border-white hover:border-1 hover:bg-white hover:text-primary-200'>
+                            <button onClick={startScraping} id='magicButton' className='bg-primary-100 rounded-sm p-2 px-3 font-kanit border-primary-100 hover:border-white hover:border-1 hover:bg-white hover:text-primary-200'>
                                 Start Magic
                             </button>
                         </div>

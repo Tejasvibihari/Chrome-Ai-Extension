@@ -7,7 +7,7 @@
         "service_worker": "service-worker.js"
     },
     "action": {
-        "default_title": "Click to open panel",
+        "default_title": "Click to Open Side Panel",
         "default_popup": "index.html"
     },
     "permissions": [

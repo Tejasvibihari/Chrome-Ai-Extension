@@ -14,14 +14,22 @@ const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 export const chat = async (req, res) => {
     const { model, type, prompt } = req.body;
+    console.log(model, type, prompt);
     try {
-        if (model === gpt) {
-            const response = gpt(prompt);
+        if (model === "gpt") {
+            console.log("GPT Model Selected");
+            const response = await gpt(prompt);
             console.log(response);
             res.json(response);
         }
-        else if (model === gemini) {
-            const response = gemini(prompt);
+        else if (model === "gemini") {
+            console.log("Gemini Model Selected");
+            const response = await gemini(prompt);
+            console.log(response);
+            res.json(response);
+        } else {
+            console.log("Both Models Selected");
+            const response = await gemini(prompt);
             console.log(response);
             res.json(response);
         }
