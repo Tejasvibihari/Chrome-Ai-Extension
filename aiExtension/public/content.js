@@ -52,3 +52,45 @@
 //         return true; // Indicate that the response is asynchronous
 //     }
 // });
+
+// Function to scrape the website data
+// Function to scrape the website data
+// content.js
+
+
+
+// chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+//     console.log("Scraping data from content.js");
+
+//     if (message.action === "scrapeData") {
+//         console.log("Scraping data from content.js");
+
+//         // Your scraping logic here
+//         const title = document.querySelector('h1')?.innerText || 'No title found';
+//         const content = document.body.innerText.substring(0, 1000); // Example
+
+//         // Send data back to service worker
+//         chrome.runtime.sendMessage({
+//             action: "scrapedData",
+//             data: "Hello This is Data from Content Js"
+//         });
+//     }
+// });
+
+function getTitle() {
+    let title = document.querySelector('h1')?.innerText || 'No title found';
+    let content = document.body.innerText.substring(0, 1000); // Example
+    // change the color of content to red
+    // document.body.style.color = "red";
+
+    console.log(title);
+    console.log(content);
+}
+
+let title = document.querySelector('h1')?.innerText || 'No title found';
+let content = document.body.innerText.substring(0, 1000); // Example
+// change the color of content to red
+document.body.style.color = "red";
+
+console.log(title);
+console.log(content);

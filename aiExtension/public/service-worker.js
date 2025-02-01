@@ -1,46 +1,8 @@
-
-
 // Allows users to open the side panel by clicking on the action toolbar icon
 chrome.sidePanel
     .setPanelBehavior({ openPanelOnActionClick: true })
     .catch((error) => console.error(error));
-
-
-// chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-//     if (message.type === "") {
-//         console.log('Received Scraped Data:', message.data); // Log the received data
-//         // Relay the message to the React component
-//         chrome.runtime.sendMessage({ type: "updateSidebar", data: message.data });
-//     } else {
-//         console.log('No message received');
-//     }
-// });
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.action === "startScraping") {
-        console.log('Starting scraping From Service Js...');
-
-        // Get the URL of the active tab
-        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-            if (tabs.length > 0) {
-                const tab = tabs[0];
-                console.log('Tab URL:', tab.url);
-
-                // Perform the scraping
-
-            } else {
-                console.error('No active tab found');
-                // sendResponse({ success: false, error: 'No active tab found' });
-            }
-        });
-
-        return true; // Indicate that the response is asynchronous
-    }
-});
 chrome.tabs.onUpdated.addListener(async (tabId, info, tab) => {
-    // if (!tab.url) return;
-    // Always enable the side panel with index.html
-    // Log the URL of the tab
-
     await chrome.sidePanel.setOptions({
         tabId,
         path: 'index.html',
@@ -48,4 +10,48 @@ chrome.tabs.onUpdated.addListener(async (tabId, info, tab) => {
     });
 });
 
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.action === "startScraping") {
+        console.log('Starting scraping...');
 
+        chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
+            const tabUrl = tabs[0].url
+            console.log('Tab URL:', tabUrl);
+            // Send the URL to the React frontend
+            chrome.runtime.sendMessage({ action: 'sendURL', url: tabUrl });
+            sendResponse({ success: true, url: tabUrl });
+        });
+
+        return true; // Keep the message channel open for async response
+    }
+});
+
+// if (tabs.length > 0) {
+//     const tab = tabs[0];
+//     console.log('Tab URL:', tab.url);
+// Send a message to the content script to invoke the function
+
+
+// // Execute the content script
+// chrome.scripting.executeScript({
+//     target: { tabId: tabs[0].id },
+//     files: ['content.js']
+// }, async () => {
+//     if (chrome.runtime.lastError) {
+//         console.error('Injection failed:', chrome.runtime.lastError, "Hello");
+//         sendResponse({ success: false, error: chrome.runtime.lastError.message });
+//         return;
+//     }
+
+//     // Send message to content script after injection
+//     chrome.tabs.sendMessage(tabs[0].id, { action: "scrapedData" }, (response) => {
+//         if (!response) {
+//             sendResponse({ success: false, error: "No response from content script" });
+//             return;
+//         }
+
+//         // Here you'll get the scraped data
+//         console.log("Scraped data:", response.data);
+//         sendResponse({ success: true, data: response.data });
+//     });
+// });

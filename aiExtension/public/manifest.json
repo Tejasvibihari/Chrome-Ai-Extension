@@ -14,17 +14,12 @@
         "sidePanel",
         "tabs",
         "activeTab",
-        "scripting"
+        "scripting",
+        "storage"
     ],
-    "content_scripts": [
-        {
-            "matches": [
-                "<all_urls>"
-            ],
-            "js": [
-                "content.js"
-            ]
-        }
+    "host_permissions": [
+        "http://*/*",
+        "https://*/*"
     ],
     "commands": {
         "_execute_action": {

@@ -8,9 +8,9 @@ import { useDispatch } from 'react-redux';
 import Markdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import Sidebar from '../components/Sidebar';
+import { startLoadingMessages } from '../utils/utils.js';
 
-
-
+// Showing The Response From Ai In The Frontend in Typewriter Effect
 function useTypewriterEffect(text, speed = 50) {
     const [displayedText, setDisplayedText] = useState('');
 
@@ -39,7 +39,7 @@ export default function Home() {
     const [model, setModel] = useState('Auto');
 
     const [loadingMessage, setLoadingMessage] = useState('');
-
+    const [tabUrl, setTabUrl] = useState('');
     // Response Show Case 
     const displayedLoadingMessage = useTypewriterEffect(loadingMessage, 50);
     const [fadeIn, setFadeIn] = useState(false);
@@ -57,30 +57,7 @@ export default function Home() {
         setSidebarVisible(!isSidebarVisible);
     };
 
-    // Handle Magic Button 
-    // document.getElementById('magicButton').addEventListener('click', () => {
-    //     console.log("Magic Button Clicked");
-    //     chrome.runtime.sendMessage({ action: "startScripting" });
-    // })
-    // useEffect(() => {
-    //     const magicButton = document.getElementById('magicButton');
-
-    //     if (magicButton) {
-    //         magicButton.addEventListener('click', () => {
-    //             console.log("Magic Button Clicked");
-    //             chrome.runtime.sendMessage({ action: "startScripting" });
-    //         });
-    //     }
-
-    //     return () => {
-    //         if (magicButton) {
-    //             magicButton.removeEventListener('click', () => {
-    //                 console.log("Magic Button Clicked");
-    //                 chrome.runtime.sendMessage({ action: "startScripting" });
-    //             });
-    //         }
-    //     };
-    // }, []);
+    //    Handle Magic Button Click
     useEffect(() => {
         const magicButton = document.getElementById('magicButton');
         if (magicButton) {
@@ -94,6 +71,59 @@ export default function Home() {
         };
 
     }, []);
+    // Start Scrapping When Magic Button Clicked
+    const startScraping = async () => {
+        try {
+            chrome.runtime.sendMessage({ action: "startScraping" }, async (response) => {
+                if (response.success) {
+                    const messages = [
+                        "Sraping Started...",
+                        'Preparing your insights...',
+                        'Unveiling patterns...',
+                        'Crafting a thoughtful response...',
+                        'Almost there, perfection takes time...'
+                    ];
+
+                    let messageIndex = 0;
+                    const interval = setInterval(() => {
+                        setLoadingMessage(messages[messageIndex]);
+                        messageIndex = (messageIndex + 1) % messages.length;
+                    }, 3000);
+                    try {
+                        const res = await client.post('/api/v0/chat/gpt-4o-mini', { model: "Auto", type: "chat", prompt: response.url });
+                        console.log(res.data);
+                        setResponse(res.data);
+                        setFadeIn(true);
+                        setTimeout(() => setFadeIn(false), 3000);
+                    } catch (error) {
+                        console.log(error);
+                    } finally {
+                        clearInterval(interval);
+                        setLoadingMessage('');
+                    }
+                    console.log(response)
+                } else {
+                    console.error("Scraping failed", response.error);
+                }
+            });
+        } catch (error) {
+            console.log(error)
+        }
+    };
+    useEffect(() => {
+        // Listen for messages from the service worker
+        const handleMessage = (message) => {
+            if (message.action === 'sendURL') {
+                setTabUrl(message.url);
+            }
+        };
+        chrome.runtime.onMessage.addListener(handleMessage);
+        // Cleanup listener on component unmount
+        return () => {
+            chrome.runtime.onMessage.removeListener(handleMessage);
+        };
+    }, []);
+    // For Sending Chat To The Backend 
     useEffect(() => {
         const createRequest = () => {
             setRequest({
@@ -104,18 +134,6 @@ export default function Home() {
         }
         createRequest();
     }, [prompt, model]);
-
-    const startScraping = async () => {
-        console.log("Magic Button Clicked");
-        chrome.runtime.sendMessage({ action: "startScraping" }, (response) => {
-            if (response.success) {
-                console.log("Scraping started successfully");
-            } else {
-                console.error("Scraping failed", response.error);
-            }
-        });
-    };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         dispatch(promptStart());
@@ -258,6 +276,8 @@ export default function Home() {
                 </div>
                 <div className='flex-grow p-4 overflow-auto custom-scrollbar'>
                     {/* Insert your additional content here */}
+                    {/* Actual Response From an Ai  */}
+                    {tabUrl}
                     <div>
                         {response ? (
                             containsTable ? (
