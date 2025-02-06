@@ -39,7 +39,7 @@ export default function Home() {
     const [model, setModel] = useState('Auto');
 
     const [loadingMessage, setLoadingMessage] = useState('');
-    const [tabUrl, setTabUrl] = useState('');
+
     // Response Show Case 
     const displayedLoadingMessage = useTypewriterEffect(loadingMessage, 50);
     const [fadeIn, setFadeIn] = useState(false);
@@ -76,8 +76,8 @@ export default function Home() {
         try {
             chrome.runtime.sendMessage({ action: "startScraping" }, async (response) => {
                 if (response.success) {
+                    dispatch(promptStart());
                     const messages = [
-                        "Sraping Started...",
                         'Preparing your insights...',
                         'Unveiling patterns...',
                         'Crafting a thoughtful response...',
@@ -90,12 +90,13 @@ export default function Home() {
                         messageIndex = (messageIndex + 1) % messages.length;
                     }, 3000);
                     try {
-                        const res = await client.post('/api/v0/scrape/webscrape', { model: "Auto", type: "chat", url: response.url });
-                        console.log(res.data);
-                        setResponse(res.data);
+                        const res = await client.post('/api/v0/scrape/webscrape', { model: model, type: "chat", url: response.url });
+                        setResponse(res.data.summarizedData);
+                        dispatch(promptSuccess(res.data.summarizedData));
                         setFadeIn(true);
                         setTimeout(() => setFadeIn(false), 3000);
                     } catch (error) {
+                        dispatch(promptFailure());
                         console.log(error);
                     } finally {
                         clearInterval(interval);
@@ -117,7 +118,11 @@ export default function Home() {
                 setTabUrl(message.url);
             }
         };
-        chrome.runtime.onMessage.addListener(handleMessage);
+        if (chrome && chrome.runtime && chrome.runtime.onMessage) {
+            chrome.runtime.onMessage.addListener(handleMessage);
+        } else {
+            console.error('chrome.runtime.onMessage is not available');
+        }
         // Cleanup listener on component unmount
         return () => {
             chrome.runtime.onMessage.removeListener(handleMessage);
@@ -154,10 +159,8 @@ export default function Home() {
             console.log(request)
             const response = await client.post('/api/v0/chat/gpt-4o-mini', request)
             setPrompt('');
-            // const text = response.data.response.candidates[0].content.parts[0].text;
             setResponse(response.data);
             dispatch(promptSuccess(response.data));
-            console.log(response.data)
             setFadeIn(true);
             setTimeout(() => setFadeIn(false), 3000);
 
@@ -277,15 +280,14 @@ export default function Home() {
                 <div className='flex-grow p-4 overflow-auto custom-scrollbar'>
                     {/* Insert your additional content here */}
                     {/* Actual Response From an Ai  */}
-                    {tabUrl}
                     <div>
                         {response ? (
                             containsTable ? (
-                                <div className={`styled-table ${fadeIn ? 'fade-in' : ''}`}>
+                                <div className={`styled-table ${fadeIn ? 'fade-in' : ''}text-white`}>
                                     <Markdown remarkPlugins={[remarkGfm]}>{response}</Markdown>
                                 </div>
                             ) : (
-                                <p className={fadeIn ? 'fade-in' : ''}>
+                                <p className={`${fadeIn ? 'fade-in' : ''} text-white`}>
                                     <Markdown remarkPlugins={[remarkGfm]}>{response}</Markdown>
                                 </p>
                             )
