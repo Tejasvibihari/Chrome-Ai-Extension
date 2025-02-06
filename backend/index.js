@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 
 import authRouter from './router/authRoute.js';
 import chatRouter from './router/chatRouter.js';
+import scrapeRouter from './router/scrapeRouter.js';
 dotenv.config();
 const app = express();
 const port = process.env.PORT;
@@ -26,6 +27,7 @@ app.get('/', (req, res) => {
 });
 app.use("/api/v0/auth", authRouter);
 app.use("/api/v0/chat", chatRouter);
+app.use("/api/v0/scrape", scrapeRouter)
 
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);

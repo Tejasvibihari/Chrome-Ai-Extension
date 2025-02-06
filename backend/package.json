@@ -20,6 +20,7 @@
     "mongoose": "^8.9.2",
     "nodemailer": "^6.9.16",
     "nodemon": "^3.1.9",
-    "openai": "^4.77.0"
+    "openai": "^4.77.0",
+    "puppeteer": "^24.1.1"
   }
 }

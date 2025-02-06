@@ -90,7 +90,7 @@ export default function Home() {
                         messageIndex = (messageIndex + 1) % messages.length;
                     }, 3000);
                     try {
-                        const res = await client.post('/api/v0/chat/gpt-4o-mini', { model: "Auto", type: "chat", prompt: response.url });
+                        const res = await client.post('/api/v0/scrape/webscrape', { model: "Auto", type: "chat", url: response.url });
                         console.log(res.data);
                         setResponse(res.data);
                         setFadeIn(true);
