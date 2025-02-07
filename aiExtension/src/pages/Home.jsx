@@ -7,6 +7,7 @@ import { promptFailure, promptStart, promptSuccess } from '../app/Prompt/PromptS
 import { useDispatch } from 'react-redux';
 import Markdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import remarkBreaks from "remark-breaks";
 import Sidebar from '../components/Sidebar';
 import { startLoadingMessages } from '../utils/utils.js';
 
@@ -241,6 +242,10 @@ export default function Home() {
                 .-translate-y-full {
                     transform: translateY(-100%);
                 }
+                .text-pre-wrap {
+                    white-space: pre-wrap;
+                    word-wrap: break-word;
+                }
             `}</style>
             {isSidebarVisible && (
                 <div className={`fixed top-0 left-0 w-full transition-transform z-50 duration-300 ${isSidebarVisible ? 'translate-y-0' : '-translate-y-full'}`}>
@@ -280,17 +285,60 @@ export default function Home() {
                 <div className='flex-grow p-4 overflow-auto custom-scrollbar'>
                     {/* Insert your additional content here */}
                     {/* Actual Response From an Ai  */}
-                    <div>
+
+                    {/* <div>
                         {response ? (
                             containsTable ? (
-                                <div className={`styled-table ${fadeIn ? 'fade-in' : ''}text-white`}>
-                                    <Markdown remarkPlugins={[remarkGfm]}>{response}</Markdown>
+                                <div className="text-white styled-table">
+                                    <pre className='text-pre-wrap'><Markdown remarkPlugins={[remarkGfm]}>{response}</Markdown></pre>
                                 </div>
                             ) : (
-                                <p className={`${fadeIn ? 'fade-in' : ''} text-white`}>
-                                    <Markdown remarkPlugins={[remarkGfm]}>{response}</Markdown>
+                                <p className=" text-white ">
+                                    <pre className='text-pre-wrap'> <Markdown remarkPlugins={[remarkGfm]}>{response}</Markdown></pre>
                                 </p>
                             )
+                        ) : (
+                            <Cube className="z-10" />
+                        )}
+                    </div> */}
+
+                    <div>
+                        {response ? (
+                            <div className="text-white">
+                                <Markdown
+                                    remarkPlugins={[remarkGfm, remarkBreaks]}
+                                    components={{
+                                        // Custom renderer for code blocks
+                                        code({ node, inline, className, children, ...props }) {
+                                            return !inline ? (
+                                                <pre className="text-pre-wrap" style={{ backgroundColor: "#2d2d2d", padding: "1em", borderRadius: "4px", overflowX: "auto" }}>
+                                                    <code className={className} {...props}>
+                                                        {children}
+                                                    </code>
+                                                </pre>
+                                            ) : (
+                                                <code className={className} {...props}>
+                                                    {children}
+                                                </code>
+                                            );
+                                        },
+                                        // Custom renderer for paragraphs to add spacing between them
+                                        p({ node, ...props }) {
+                                            return <p style={{ marginBottom: "1em", lineHeight: "1.5" }} {...props} />;
+                                        },
+                                        // Custom renderer for tables (if needed)
+                                        table({ node, ...props }) {
+                                            return (
+                                                <div className="styled-table">
+                                                    <table {...props} />
+                                                </div>
+                                            );
+                                        },
+                                    }}
+                                >
+                                    {response}
+                                </Markdown>
+                            </div>
                         ) : (
                             <Cube className="z-10" />
                         )}
@@ -310,7 +358,7 @@ export default function Home() {
                 </div>
                 <form className='p-2 bg-secondary-200 flex items-center justify-center flex-col '>
                     <div className='flex items-center justify-center space-x-1 w-full'>
-                        <input type='text' onChange={(e) => setPrompt(e.target.value)} value={prompt} placeholder='How Can I Help You ?' className='w-full p-1 rounded-md bg-secondary-100 focus:outline-none focus:shadow-sm focus:shadow-primary-100 text-white' />
+                        <textarea type='text' onChange={(e) => setPrompt(e.target.value)} value={prompt} placeholder='How Can I Help You ?' className='w-full p-1 rounded-md bg-secondary-100 focus:outline-none focus:shadow-sm focus:shadow-primary-100 text-white' />
                         <button onClick={handleSubmit} className='p-2 border-primary-100 border rounded-full bg-primary-200'>
                             <Send size={18} />
                         </button>
@@ -320,7 +368,7 @@ export default function Home() {
                     </span>
                 </form>
 
-            </div>
+            </div >
         </>
     )
 }
