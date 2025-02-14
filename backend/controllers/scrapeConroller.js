@@ -14,33 +14,32 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 export const webScrape = async (req, res) => {
-    const { url, link, model } = req.body;
+    const { url, links, model, qa } = req.body;
+    console.log(req.body);
     console.log('Url:', url);
     try {
-        let links = [];
+        let allLinks = [];
         // Step 1 :- Get The Data From Website 
-        console.log("Sraping Started....")
-        const rawData = await scrapeData(url);
-        console.log("Sraping Done....")
+        // console.log("Sraping Started....")
+        // const rawData = await scrapeData(url);
+        // console.log("Sraping Done....")
         // Step 2 :- Revove All Unwanted Stuff from Scraped Data 
-        console.log("Filtering Started....")
-        const filteredData = await filterContent(rawData);
-        console.log("Filtering Done....")
+        // console.log("Filtering Started....")
+        // const filteredData = await filterContent(rawData);
+        // console.log("Filtering Done....")
         // Step 3 :- Summarize The Data filtered Data
-        console.log("Summarizing Started....")
-        const summarizedData = await summarizeData(model, filteredData);
+        // console.log("Summarizing Started....")
+        // const summarizedData = await summarizeData(model, filteredData);
         console.log("Sraping Done....")
-        // Get All The link From Web Page 
-        // if (link) {
-        //     links = await page.$$eval('a', anchors =>
-        //         anchors.map(anchor => ({
-        //             text: anchor.innerText.trim(),  // the visible text of the link
-        //             href: anchor.href                // the link URL
-        //         }))
-        //     );
-        // }
-        // console.log(geminiOutput);
-        res.json({ summarizedData });
+
+        if (links) {
+            // Get All The link From Web Page 
+            allLinks = await getLinks(url);
+        }
+        // res.json({ summarizedData });
+        console.log(allLinks);
+        res.json({ summarizedData: "hello", allLinks });
+
     } catch (error) {
         console.log(error);
     }
@@ -86,6 +85,29 @@ const gemini = async (prompt) => {
     }
 }
 
+const getLinks = async (url) => {
+    try {
+        let links = [];
+        // Launch the browser and open a new blank page
+        const browser = await puppeteer.launch();
+        // Create New Page Or New Tab To Open The Url 
+        const page = await browser.newPage();
+        // Go To Target Website 
+        const timeout = 100000;
+        await page.goto(url, { timeout });
+
+        links = await page.$$eval('a', anchors =>
+            anchors.map(anchor => ({
+                text: anchor.innerText.trim(),  // the visible text of the link
+                href: anchor.href                // the link URL
+            }))
+        );
+        return links;
+    } catch (error) {
+        console.log(error);
+        res.json({ error });
+    }
+}
 const scrapeData = async (url) => {
     try {
         // Launch the browser and open a new blank page
@@ -96,6 +118,8 @@ const scrapeData = async (url) => {
         const timeout = 100000;
         await page.goto(url, { timeout });
         const textContent = await page.evaluate(() => document.body.innerText);
+        // Get All The link From Web Page 
+
         await browser.close();
         return textContent;
     } catch (error) {
@@ -181,5 +205,15 @@ ${filteredData}
     } catch (error) {
         console.log("Error During Summerizing the Data :", error);
         return error;
+    }
+}
+
+
+
+export const pythonRequest = async (req, res) => {
+    try {
+        const response = await axios.get()
+    } catch (error) {
+        console.log(error);
     }
 }

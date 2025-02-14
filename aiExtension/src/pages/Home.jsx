@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Send, Cog } from 'lucide-react';
+import { Send, Cog, ChevronsRight, ChevronRight } from 'lucide-react';
 import client from '../service/axioxClient';
 import Cube from '../components/Cube';
 import { useSelector } from 'react-redux';
@@ -38,8 +38,11 @@ export default function Home() {
     const [response, setResponse] = useState("");
     const [prompt, setPrompt] = useState('');
     const [model, setModel] = useState('Auto');
-
+    const [links, setLinks] = useState(false);
+    const [qa, setQA] = useState(false);
     const [loadingMessage, setLoadingMessage] = useState('');
+    const [allLinks, setAllLinks] = useState([]);
+    const [tabUrl, setTabUrl] = useState();
 
     // Response Show Case 
     const displayedLoadingMessage = useTypewriterEffect(loadingMessage, 50);
@@ -57,7 +60,7 @@ export default function Home() {
     const toggleSidebar = () => {
         setSidebarVisible(!isSidebarVisible);
     };
-
+    console.log(tabUrl);
     //    Handle Magic Button Click
     useEffect(() => {
         const magicButton = document.getElementById('magicButton');
@@ -91,9 +94,13 @@ export default function Home() {
                         messageIndex = (messageIndex + 1) % messages.length;
                     }, 3000);
                     try {
-                        const res = await client.post('/api/v0/scrape/webscrape', { model: model, type: "chat", url: response.url });
+                        const res = await client.post('/api/v0/scrape/webscrape', { model: model, type: "chat", url: response.url, links, qa });
+                        console.log('First response:', res.data);
+                        setAllLinks(res.data.allLinks);
                         setResponse(res.data.summarizedData);
-                        dispatch(promptSuccess(res.data.summarizedData));
+                        dispatch(promptSuccess(res.data));
+                        console.log('Second response:', res.data);
+                        console.log(res.data)
                         setFadeIn(true);
                         setTimeout(() => setFadeIn(false), 3000);
                     } catch (error) {
@@ -103,7 +110,6 @@ export default function Home() {
                         clearInterval(interval);
                         setLoadingMessage('');
                     }
-                    console.log(response)
                 } else {
                     console.error("Scraping failed", response.error);
                 }
@@ -135,11 +141,13 @@ export default function Home() {
             setRequest({
                 model,
                 type: "chat",
-                prompt: prompt
+                prompt: prompt,
+                links: links,
+                qa: qa
             });
         }
         createRequest();
-    }, [prompt, model]);
+    }, [prompt, model, links, qa]);
     const handleSubmit = async (e) => {
         e.preventDefault();
         dispatch(promptStart());
@@ -338,7 +346,34 @@ export default function Home() {
                                 >
                                     {response}
                                 </Markdown>
+
+                                {data.allLinks && data.allLinks &&
+                                    <div>
+                                        <h2 className='font-kanit my-2'>All Links of This Page</h2>
+                                        <ul>
+                                            {data.allLinks.map((links, index) => {
+                                                return <li key={index} className='font-kanit flex space-x-2 items-center'>
+                                                    <ChevronsRight size={20} color='red' />
+                                                    <span>{links.text}</span>
+                                                    <ChevronRight size={12} />
+                                                    <a className='hover:text-primary-100' href={links.href} target='_blank'>
+                                                        {links.href}
+                                                    </a>
+                                                </li>
+
+                                            })}
+                                        </ul>
+                                    </div>
+                                }
+                                {/* <ul className='p-2 flex flex-col space-y-2'>
+                                    <li className='font-kanit flex space-x-2 items-center'><span><ChevronsRight size={20} color='red' /></span><span>Home</span><ChevronRight size={12} /><a className='text-primary-400' href='www.biharilibrary.in'>www.biharilibrary.in</a></li>
+                                    <li type='disc' className='font-kanit'>Homewww.biharilibrari.in</li>
+                                    <li type='disc' className='font-kanit'>Homewww.biharilibrari.in</li>
+                                    <li type='disc' className='font-kanit'>Homewww.biharilibrari.in</li>
+                                </ul> */}
+
                             </div>
+
                         ) : (
                             <Cube className="z-10" />
                         )}
@@ -348,7 +383,21 @@ export default function Home() {
                             {displayedLoadingMessage}
                         </p>
                         :
-                        <div className='flex items-center justify-center'>
+                        <div className='flex flex-col items-center justify-center space-y-2'>
+                            <div className='flex items-center justify-center space-x-2'>
+                                <button
+                                    className={`${links ? 'bg-primary-100 text-black border-primary-100 border' : 'border-black'} border  rounded-full font-kanit px-3 py-1 text-white hover:bg-primary-100 hover:text-black`}
+                                    onClick={() => setLinks(!links)}
+                                >
+                                    Links
+                                </button>
+                                <button
+                                    className={`${qa ? 'bg-primary-100 text-black border-primary-100 border' : 'border-black'} border  rounded-full font-kanit px-3 py-1 text-white hover:bg-primary-100 hover:text-black`}
+                                    onClick={() => setQA(!qa)}
+                                >
+                                    Q&A
+                                </button>
+                            </div>
                             <button onClick={startScraping} id='magicButton' className='bg-primary-100 rounded-sm p-2 px-3 font-kanit border-primary-100 hover:border-white hover:border-1 hover:bg-white hover:text-primary-200'>
                                 Start Magic
                             </button>
