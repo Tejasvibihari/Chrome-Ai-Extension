@@ -378,44 +378,50 @@ export default function Home() {
                             <Cube className="z-10" />
                         )}
                     </div>
-                    {loading ?
+                    {loading &&
                         <p className='flex items-center justify-center font-kanit text-gray-400'>
                             {displayedLoadingMessage}
                         </p>
-                        :
-                        <div className='flex flex-col items-center justify-center space-y-2'>
-                            <div className='flex items-center justify-center space-x-2'>
-                                <button
-                                    className={`${links ? 'bg-primary-100 text-black border-primary-100 border' : 'border-black'} border  rounded-full font-kanit px-3 py-1 text-white hover:bg-primary-100 hover:text-black`}
-                                    onClick={() => setLinks(!links)}
-                                >
-                                    Links
-                                </button>
-                                <button
-                                    className={`${qa ? 'bg-primary-100 text-black border-primary-100 border' : 'border-black'} border  rounded-full font-kanit px-3 py-1 text-white hover:bg-primary-100 hover:text-black`}
-                                    onClick={() => setQA(!qa)}
-                                >
-                                    Q&A
-                                </button>
-                            </div>
-                            <button onClick={startScraping} id='magicButton' className='bg-primary-100 rounded-sm p-2 px-3 font-kanit border-primary-100 hover:border-white hover:border-1 hover:bg-white hover:text-primary-200'>
-                                Start Magic
-                            </button>
-                        </div>
+
+
                     }
 
                 </div>
-                <form className='p-2 bg-secondary-200 flex items-center justify-center flex-col '>
+                <div className='p-2 bg-secondary-200 flex items-center justify-center flex-col '>
                     <div className='flex items-center justify-center space-x-1 w-full'>
-                        <textarea type='text' onChange={(e) => setPrompt(e.target.value)} value={prompt} placeholder='How Can I Help You ?' className='w-full p-1 rounded-md bg-secondary-100 focus:outline-none focus:shadow-sm focus:shadow-primary-100 text-white' />
-                        <button onClick={handleSubmit} className='p-2 border-primary-100 border rounded-full bg-primary-200'>
-                            <Send size={18} />
-                        </button>
+                        <textarea type='text' onChange={(e) => setPrompt(e.target.value)} value={prompt} placeholder='How Can I Help You ?' className='w-full p-1 rounded-se-md rounded-ss-md bg-secondary-100 focus:outline-none focus:shadow-sm focus:shadow-primary-100 text-white' />
+
                     </div>
+
+                    <div className='flex flex-row items-center w-full justify-between bg-secondary-100 space-y-2 rounded-bl-md rounded-br-md p-2'>
+                        <div className='flex items-center justify-center space-x-2'>
+                            <button
+                                className={`${links ? 'bg-primary-100 text-black border-primary-100 border' : 'border-black'} border  rounded-full font-kanit px-3 py-1 text-white hover:bg-primary-100 hover:text-black`}
+                                onClick={() => setLinks(!links)}
+                            >
+                                Links
+                            </button>
+                            <button
+                                className={`${qa ? 'bg-primary-100 text-black border-primary-100 border' : 'border-black'} border  rounded-full font-kanit px-3 py-1 text-white hover:bg-primary-100 hover:text-black`}
+                                onClick={() => setQA(!qa)}
+                            >
+                                Q&A
+                            </button>
+                        </div>
+                        <div className='flex items-center justify-center space-x-2'>
+                            <button onClick={startScraping} id='magicButton' className='bg-primary-100 rounded-sm p-2 px-3 font-kanit border-primary-100 hover:border-white hover:border-1 hover:bg-white hover:text-primary-200'>
+                                Start Magic
+                            </button>
+                            <button onClick={handleSubmit} className='p-2 border-primary-100 border rounded-full bg-primary-200'>
+                                <Send size={18} />
+                            </button>
+                        </div>
+                    </div>
+
                     <span className='text-xs text-gray-400 font-kanit'>
                         Ai can make mistakes, so double-check it
                     </span>
-                </form>
+                </div>
 
             </div >
         </>
