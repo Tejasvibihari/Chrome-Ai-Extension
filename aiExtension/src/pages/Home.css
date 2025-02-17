@@ -1,0 +1,88 @@
+ .custom-scrollbar::-webkit-scrollbar {
+     width: 12px;
+ }
+
+ .custom-scrollbar::-webkit-scrollbar-track {
+     background: #f1f1f1;
+ }
+
+ .custom-scrollbar::-webkit-scrollbar-thumb {
+     background-color: #888;
+     border-radius: 10px;
+     border: 3px solid #f1f1f1;
+ }
+
+ .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+     background: #555;
+ }
+
+ .fade-in {
+     animation: fadeIn 3s forwards;
+     /* Adjust the duration of the fade-in effect */
+ }
+
+ @keyframes fadeIn {
+     from {
+         opacity: 0;
+     }
+
+     to {
+         opacity: 1;
+     }
+ }
+
+ .fade-out {
+     animation: fadeOut 3s forwards;
+     /* Adjust the duration of the fade-out effect */
+ }
+
+ @keyframes fadeOut {
+     from {
+         opacity: 1;
+     }
+
+     to {
+         opacity: 0;
+     }
+ }
+
+ .styled-table {
+     overflow-x: auto;
+     padding: 10px;
+     border-radius: 5px;
+ }
+
+ .styled-table table {
+     width: 100%;
+     border-collapse: collapse;
+ }
+
+ .styled-table th,
+ .styled-table td {
+     border: 1px solid #ddd;
+     padding: 8px;
+     border-color: black;
+ }
+
+ .styled-table th {
+     background-color: #212121;
+     color: #cc72f2;
+     text-align: left;
+ }
+
+ .transition-transform {
+     transition: transform 0.3s ease-in-out;
+ }
+
+ .translate-y-0 {
+     transform: translateY(0);
+ }
+
+ .-translate-y-full {
+     transform: translateY(-100%);
+ }
+
+ .text-pre-wrap {
+     white-space: pre-wrap;
+     word-wrap: break-word;
+ }

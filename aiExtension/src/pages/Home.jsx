@@ -238,7 +238,7 @@ export default function Home() {
                 }
                 .styled-table th {
                     background-color: #212121;
-                    color: white;
+                    color: #cc72f2;
                     text-align: left;
                 }
                     .transition-transform {
@@ -350,42 +350,38 @@ export default function Home() {
                                 {data.allLinks && data.allLinks &&
                                     <div>
                                         <h2 className='font-kanit my-2'>All Links of This Page</h2>
-                                        <ul>
-                                            {data.allLinks.map((links, index) => {
-                                                return <li key={index} className='font-kanit flex space-x-2 items-center'>
-                                                    <ChevronsRight size={20} color='red' />
-                                                    <span>{links.text}</span>
-                                                    <ChevronRight size={12} />
-                                                    <a className='hover:text-primary-100' href={links.href} target='_blank'>
-                                                        {links.href}
-                                                    </a>
-                                                </li>
-
-                                            })}
-                                        </ul>
+                                        <div className='styled-table'>
+                                            <table>
+                                                <thead>
+                                                    <tr>
+                                                        <th className='text-primary-100'>Text</th>
+                                                        <th className='text-primary-100'>Link</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {data.allLinks.map((links, index) => {
+                                                        return (
+                                                            <tr key={index}>
+                                                                <td>{links.text}</td>
+                                                                <td>
+                                                                    <a className='hover:text-primary-100' href={links.href} target='_blank'>
+                                                                        {links.href}
+                                                                    </a>
+                                                                </td>
+                                                            </tr>
+                                                        );
+                                                    })}
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
                                 }
-                                {/* <ul className='p-2 flex flex-col space-y-2'>
-                                    <li className='font-kanit flex space-x-2 items-center'><span><ChevronsRight size={20} color='red' /></span><span>Home</span><ChevronRight size={12} /><a className='text-primary-400' href='www.biharilibrary.in'>www.biharilibrary.in</a></li>
-                                    <li type='disc' className='font-kanit'>Homewww.biharilibrari.in</li>
-                                    <li type='disc' className='font-kanit'>Homewww.biharilibrari.in</li>
-                                    <li type='disc' className='font-kanit'>Homewww.biharilibrari.in</li>
-                                </ul> */}
-
                             </div>
 
                         ) : (
                             <Cube className="z-10" />
                         )}
                     </div>
-                    {loading &&
-                        <p className='flex items-center justify-center font-kanit text-gray-400'>
-                            {displayedLoadingMessage}
-                        </p>
-
-
-                    }
-
                 </div>
                 <div className='p-2 bg-secondary-200 flex items-center justify-center flex-col '>
                     <div className='flex items-center justify-center space-x-1 w-full'>
@@ -418,8 +414,17 @@ export default function Home() {
                         </div>
                     </div>
 
-                    <span className='text-xs text-gray-400 font-kanit'>
-                        Ai can make mistakes, so double-check it
+                    <span className='min-h-5 h-5'>
+                        {loading ?
+                            <p className='text-xs text-gray-400 font-kanit items-center justify-center '>
+                                {displayedLoadingMessage}
+                            </p>
+                            :
+                            <p className='text-xs text-gray-400 font-kanit items-center justify-center '>
+                                Ai can make mistakes, so double-check it
+                            </p>
+                        }
+
                     </span>
                 </div>
 

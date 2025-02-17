@@ -20,16 +20,16 @@ export const webScrape = async (req, res) => {
     try {
         let allLinks = [];
         // Step 1 :- Get The Data From Website 
-        // console.log("Sraping Started....")
-        // const rawData = await scrapeData(url);
-        // console.log("Sraping Done....")
+        console.log("Sraping Started....")
+        const rawData = await scrapeData(url);
+        console.log("Sraping Done....")
         // Step 2 :- Revove All Unwanted Stuff from Scraped Data 
-        // console.log("Filtering Started....")
-        // const filteredData = await filterContent(rawData);
-        // console.log("Filtering Done....")
+        console.log("Filtering Started....")
+        const filteredData = await filterContent(rawData);
+        console.log("Filtering Done....")
         // Step 3 :- Summarize The Data filtered Data
-        // console.log("Summarizing Started....")
-        // const summarizedData = await summarizeData(model, filteredData);
+        console.log("Summarizing Started....")
+        const summarizedData = await summarizeData(model, filteredData);
         console.log("Sraping Done....")
 
         if (links) {
@@ -37,8 +37,9 @@ export const webScrape = async (req, res) => {
             allLinks = await getLinks(url);
         }
         // res.json({ summarizedData });
-        console.log(allLinks);
-        res.json({ summarizedData: "hello", allLinks });
+        // console.log(allLinks);
+        console.log(summarizeData)
+        res.json({ summarizedData, allLinks });
 
     } catch (error) {
         console.log(error);
@@ -105,7 +106,7 @@ const getLinks = async (url) => {
         return links;
     } catch (error) {
         console.log(error);
-        res.json({ error });
+        return error;
     }
 }
 const scrapeData = async (url) => {
