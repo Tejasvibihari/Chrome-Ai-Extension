@@ -1,10 +1,44 @@
-import { configureStore } from '@reduxjs/toolkit'
-import authReducer from './Auth/AuthSlice'
-import promptReducer from './Prompt/PromptSlice'
+import { configureStore } from "@reduxjs/toolkit";
+import { persistStore, persistReducer } from "redux-persist";
+import storage from "redux-persist/lib/storage"; // Import storage for local storage
+import authReducer from "./Auth/AuthSlice";
+import promptReducer from "./Prompt/PromptSlice";
+import chatReducer from "./Chat/ChatSlice";
 
+// Persist config for auth
+const authPersistConfig = {
+    key: "auth",
+    storage,
+};
+
+// Persist config for prompt
+const promptPersistConfig = {
+    key: "prompt",
+    storage,
+};
+// Persist config for chat
+const chatPersistConfig = {
+    key: "chat",
+    storage,
+};
+
+// Wrap reducers with persistReducer
+const persistedAuthReducer = persistReducer(authPersistConfig, authReducer);
+const persistedPromptReducer = persistReducer(promptPersistConfig, promptReducer);
+const persistedChatReducer = persistReducer(chatPersistConfig, chatReducer);
+
+// Configure store
 export const store = configureStore({
     reducer: {
-        auth: authReducer,
-        prompt: promptReducer,
+        auth: persistedAuthReducer,  // Persisted Auth Reducer
+        prompt: persistedPromptReducer, // Persisted Prompt Reducer
+        chat: persistedChatReducer, // Persisted Chat Reducer
     },
-})
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware({
+            serializableCheck: false, // Disable serializable check for redux-persist
+        }),
+});
+
+// Persist store
+export const persistor = persistStore(store);

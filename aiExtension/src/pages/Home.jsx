@@ -10,6 +10,8 @@ import remarkGfm from 'remark-gfm'
 import remarkBreaks from "remark-breaks";
 import Sidebar from '../components/Sidebar';
 import { startLoadingMessages } from '../utils/utils.js';
+import "./Home.css";
+import Topbar from '../components/Topbar.jsx';
 
 // Showing The Response From Ai In The Frontend in Typewriter Effect
 function useTypewriterEffect(text, speed = 50) {
@@ -185,77 +187,7 @@ export default function Home() {
     const containsTable = /\|.*\|/.test(response);
     return (
         <>
-            <style jsx>{`
-                .custom-scrollbar::-webkit-scrollbar {
-                    width: 12px;
-                }
-                .custom-scrollbar::-webkit-scrollbar-track {
-                    background: #f1f1f1;
-                }
-                .custom-scrollbar::-webkit-scrollbar-thumb {
-                    background-color: #888;
-                    border-radius: 10px;
-                    border: 3px solid #f1f1f1;
-                }
-                .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-                    background: #555;
-                }
-                .fade-in {
-                    animation: fadeIn 3s forwards; /* Adjust the duration of the fade-in effect */
-                }
-                @keyframes fadeIn {
-                    from {
-                        opacity: 0;
-                    }
-                    to {
-                        opacity: 1;
-                    }
-                }
-                .fade-out {
-                    animation: fadeOut 3s forwards; /* Adjust the duration of the fade-out effect */
-                }
-                @keyframes fadeOut {
-                    from {
-                        opacity: 1;
-                    }
-                    to {
-                        opacity: 0;
-                    }
-                }
-                .styled-table {
-                    overflow-x: auto;
-                    padding: 10px;
-                    border-radius: 5px;
-                }
-                .styled-table table {
-                    width: 100%;
-                    border-collapse: collapse;
-                }
-                .styled-table th, .styled-table td {
-                    border: 1px solid #ddd;
-                    padding: 8px;
-                    border-color: black; 
-                }
-                .styled-table th {
-                    background-color: #212121;
-                    color: #cc72f2;
-                    text-align: left;
-                }
-                    .transition-transform {
-                    transition: transform 0.3s ease-in-out;
-                }
-                .translate-y-0 {
-                    transform: translateY(0);
-                }
-                .-translate-y-full {
-                    transform: translateY(-100%);
-                }
-                .text-pre-wrap {
-                    white-space: pre-wrap;
-                    word-wrap: break-word;
-                }
-            `}</style>
-            {isSidebarVisible && (
+            {/* {isSidebarVisible && (
                 <div className={`fixed top-0 left-0 w-full transition-transform z-50 duration-300 ${isSidebarVisible ? 'translate-y-0' : '-translate-y-full'}`}>
                     <Sidebar
                         toggleSidebar={toggleSidebar}
@@ -269,9 +201,10 @@ export default function Home() {
                         setSocialMedia={setSocialMedia}
                     />
                 </div>
-            )}
+            )} */}
             <div className='w-full h-[100vh] flex flex-col'>
-                <div className='bg-secondary-200 flex flex-row items-center justify-between'>
+                <Topbar />
+                {/* <div className='bg-secondary-200 flex flex-row items-center justify-between'>
                     <div className='p-3  text-white font-kanit text-lg'>
                         Hello <span className='text-primary-100'>Tejasvi Bihari</span>
                     </div>
@@ -288,15 +221,14 @@ export default function Home() {
                             <Cog onClick={toggleSidebar} className='text-gray-400' />
                         </div>
                     </div>
-
-                </div>
+                </div> */}
                 <div className='flex-grow p-4 overflow-auto custom-scrollbar'>
                     {/* Insert your additional content here */}
                     {/* Actual Response From an Ai  */}
 
                     {/* <div>
                         {response ? (
-                            containsTable ? (
+                            containsTable ? ( 
                                 <div className="text-white styled-table">
                                     <pre className='text-pre-wrap'><Markdown remarkPlugins={[remarkGfm]}>{response}</Markdown></pre>
                                 </div>

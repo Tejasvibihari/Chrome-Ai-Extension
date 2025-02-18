@@ -4,6 +4,7 @@ import { useFrame, useThree, Canvas } from '@react-three/fiber';
 import Auth from './pages/Auth';
 import { useSelector } from 'react-redux';
 import Home from './pages/Home';
+import SetName from './components/SetName';
 
 // Component to load and display the GLTF model
 const Model = (props) => {
@@ -45,11 +46,10 @@ export const SphereComponent = ({ radius, color, initialPosition }) => {
 };
 
 export default function App() {
-  const user = useSelector(state => state.auth.user);
+  const name = useSelector(state => state.auth.name);
+  console.log("Name From Store:-", name);
 
-  const [scrapedData, setScrapedData] = useState('');
-  const [tabUrl, setTabUrl] = useState('');
-  const [wdata, setWdata] = useState('');
+
 
   const fixedRadius = 0.01;
   const spheres = Array.from({ length: 200 }, (_, i) => ({
@@ -63,77 +63,24 @@ export default function App() {
     ],
   }));
 
-  // useEffect(() => {
-  //   // Function to get the current tab's URL
-  //   const getCurrentTabUrl = () => {
-  //     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-  //       if (tabs.length > 0) {
-  //         const url = tabs[0].url;
-  //         setTabUrl(url);
-  //         console.log('Initial Tab URL:', url);
-  //       }
-  //     });
-  //   };
-
-  //   // Get the current tab's URL when the component mounts
-  //   getCurrentTabUrl();
-
-  //   // Listen for messages from the background script
-  //   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  //     if (message.type === "updateSidebar") {
-  //       console.log('Message from Background Script:', message); // Log the message
-  //       setScrapedData(message.data.text);
-  //       setTabUrl(message.data.url);
-  //       setWdata(message.data.wdata);
-  //       console.log('Tab URL from App.js:', message.data.url);
-  //       console.log('Whole Data Line 31:', message.data.wdata);
-  //     }
-  //   });
-  // }, []);
 
   return (
     <>
       <div className='bg-secondary-100'>
         <div className=''>
-          <Home />
+          {/* <Home /> */}
         </div>
-        {/* <div className='p-4'> */}
-        {/* {user.email ? `Hello ${user.email}` : <Auth />} */}
-        {/* </div> */}
-      </div>
+        <div className=''>
+          {name == null
+            ?
+            <div className='bg-secondary-200 p-4 h-screen mx-auto items-center justify-center flex flex-col'>
+              <SetName />
+            </div>
+            :
+            <Home />}
+        </div>
+      </div >
     </>
   );
 }
 
-
-//  <Canvas>
-//         <ambientLight position={[0, 0, 5]} />
-//         {/* {spheres.map((sphere, index) => (
-//             <SphereComponent
-//               key={index}
-//               radius={sphere.radius}
-//               color={sphere.color}
-//               initialPosition={sphere.initialPosition}
-//             />
-//           ))} */}
-
-//       </Canvas>
-
-
-
-//       <div className='p-4 bg-red-400 text-white h-screen flex md:flex-row flex-col justify-center items-center'>
-
-//         <br />
-//         <Canvas className="h-full">
-//           <ambientLight position={[0, 0, 5]} intensity={10} />
-//           <PerspectiveCamera makeDefault position={[0, 5, 15]} />
-//           {/* <OrbitControls /> */}
-//           <Model position={[0, -3, 0]} scale={2} />
-//         </Canvas>
-
-//         <div>
-//           {scrapedData ? scrapedData : 'Loading...'}
-
-//           <Cube />
-//         </div>
-//       </div>

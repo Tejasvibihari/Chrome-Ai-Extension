@@ -1,7 +1,7 @@
 import { CircleUserRound, Mail, Lock, UserRoundPen } from 'lucide-react';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { signup } from '../app/Auth/AuthSlice';
+import { setName } from '../app/Auth/AuthSlice';
 
 export default function Signup() {
     const dispatch = useDispatch();
@@ -10,7 +10,7 @@ export default function Signup() {
     const handleSignUp = (e) => {
         e.preventDefault();
         try {
-            dispatch(signup(formData));
+            dispatch(setName(formData));
             console.log("Success");
         } catch (error) {
             console.log(error);
