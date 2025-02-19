@@ -20,18 +20,18 @@ export const chat = async (req, res) => {
             console.log("GPT Model Selected");
             const response = await gpt(prompt);
             console.log(response);
-            res.json(response);
+            res.json({ role: "Ai", content: response });
         }
         else if (model === "gemini") {
             console.log("Gemini Model Selected");
             const response = await gemini(prompt);
             console.log(response);
-            res.json(response);
+            res.json({ role: "Ai", content: response });
         } else {
             console.log("Both Models Selected");
             const response = await gemini(prompt);
             console.log(response);
-            res.json(response);
+            res.json({ role: "Ai", content: response });
         }
 
     } catch (error) {

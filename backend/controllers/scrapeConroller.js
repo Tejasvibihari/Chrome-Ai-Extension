@@ -17,29 +17,34 @@ export const webScrape = async (req, res) => {
     const { url, links, model, qa } = req.body;
     console.log(req.body);
     console.log('Url:', url);
+    console.log('Link', typeof links);
+
     try {
         let allLinks = [];
-        // Step 1 :- Get The Data From Website 
-        console.log("Sraping Started....")
-        const rawData = await scrapeData(url);
-        console.log("Sraping Done....")
-        // Step 2 :- Revove All Unwanted Stuff from Scraped Data 
-        console.log("Filtering Started....")
-        const filteredData = await filterContent(rawData);
-        console.log("Filtering Done....")
-        // Step 3 :- Summarize The Data filtered Data
-        console.log("Summarizing Started....")
-        const summarizedData = await summarizeData(model, filteredData);
-        console.log("Sraping Done....")
-
-        if (links) {
+        if (links === true) {
             // Get All The link From Web Page 
+            console.log("running");
             allLinks = await getLinks(url);
+            console.log(allLinks);
+            res.json({ role: "Link", content: allLinks });
+            return;
+        } else {
+            // Step 1 :- Get The Data From Website 
+            console.log("Scraping Started....")
+            const rawData = await scrapeData(url);
+            console.log("Hello Scraping Done....")
+            // Step 2 :- Remove All Unwanted Stuff from Scraped Data 
+            console.log("Filtering Started....")
+            const filteredData = await filterContent(rawData);
+            console.log("Filtering Done....")
+            // Step 3 :- Summarize The Data filtered Data
+            console.log("Summarizing Started....")
+            const summarizedData = await summarizeData(model, filteredData);
+            console.log("Scraping Done....")
+            // { role: "user", content: "Hello, AI!" }
+            console.log(summarizedData)
+            res.json({ role: "Ai", content: summarizedData });
         }
-        // res.json({ summarizedData });
-        // console.log(allLinks);
-        console.log(summarizeData)
-        res.json({ summarizedData, allLinks });
 
     } catch (error) {
         console.log(error);

@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import { X } from 'lucide-react';
+import { X, Trash2 } from 'lucide-react';
+import { useDispatch } from 'react-redux';
+import { clearData } from '../app/Setting/SettingSlice';
+import { clearName } from '../app/Auth/AuthSlice';
+import { clearChat } from '../app/Chat/ChatSlice';
 
 export default function Sidebar({
     toggleSidebar,
@@ -12,6 +16,7 @@ export default function Sidebar({
     socialMedia,
     setSocialMedia
 }) {
+    const dispatch = useDispatch();
 
     useEffect(() => {
         if (chat) {
@@ -20,7 +25,11 @@ export default function Sidebar({
             setSocialMedia(false);
         }
     })
-
+    const deleteAllData = () => {
+        dispatch(clearData());
+        dispatch(clearName());
+        dispatch(clearChat());
+    }
     return (
         <>
             <div className='absolute w-full right-0 h-40 z-20'>
@@ -50,6 +59,15 @@ export default function Sidebar({
                             <input type='checkbox' id='socialMedia' name='socialMedia' onChange={(e) => setSocialMedia(e.target.checked)} checked={socialMedia} className='custom-checkbox' disabled={chat == true} />
                             <label htmlFor='socialMedia' className={`${chat ? "text-secondary-200" : "text-black cursor-pointer"}`}>Social Media Scan</label>
                         </li>
+                        <li
+                            onClick={deleteAllData}
+                            className='border-b flex flex-row space-x-2 items-center justify-center border-secondary-200 font-kanit hover:text-white p-2 w-full text-center cursor-pointer hover:bg-gradient-to-t from-primary-200 via-primary-100 via-10% to-transparent to-80% transition-all ease-in'>
+                            <Trash2 size={20} className='text-red-600' />
+                            <span className={`${chat ? "text-secondary-200" : "cursor-pointer text-red-600"}`}>
+                                Delete All Data
+                            </span>
+                        </li>
+
                     </ul>
                 </div>
             </div>

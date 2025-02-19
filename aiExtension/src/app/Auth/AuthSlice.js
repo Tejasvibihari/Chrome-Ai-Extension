@@ -13,14 +13,14 @@ export const authSlice = createSlice({
             state.loading = true;
             state.name = action.payload;
         },
-        siginStart: (state) => {
-            state.loading = true;
+        clearName: (state) => {
+            state.name = null;
         },
 
     },
 })
 
 // Action creators are generated for each case reducer function
-export const { setName } = authSlice.actions
+export const { setName, clearName } = authSlice.actions
 
 export default authSlice.reducer

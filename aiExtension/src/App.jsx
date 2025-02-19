@@ -47,8 +47,6 @@ export const SphereComponent = ({ radius, color, initialPosition }) => {
 
 export default function App() {
   const name = useSelector(state => state.auth.name);
-  console.log("Name From Store:-", name);
-
 
 
   const fixedRadius = 0.01;
