@@ -20,7 +20,7 @@
                 context: "The following is the scraped data from a website. Use this information as the primary reference to answer the user's question.",
                 scraped_data: context,
                 user_question: prompt,
-                instructions: "Use the provided scraped data as the main source. If the user's question requires additional context, infer the most logical answer. If information is missing, state that clearly but try to provide helpful insights."
+                instructions: "Use the provided scraped data as the main source. If the user's question requires additional context, infer the most logical answer. If information is missing, state that clearly but try to provide helpful insights. And if the context is not given to you then generate the answer based on the user's question only."
             };
             if (model === "gpt") {
                 console.log("GPT Model Selected");
