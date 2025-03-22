@@ -12,6 +12,10 @@ const chatSlice = createSlice({
         chatInitiate: (state) => {
             state.loading = true;
         },
+        scrapeStart: (state) => {
+            state.loading = true;
+            state.messages = [];
+        },
         addMessage: (state, action) => {
             state.messages.push(action.payload);
             state.loading = false;
@@ -24,5 +28,5 @@ const chatSlice = createSlice({
         }
     }
 })
-export const { chatInitiate, chatFailure, addMessage, clearChat, } = chatSlice.actions;
+export const { scrapeStart, chatInitiate, chatFailure, addMessage, clearChat, } = chatSlice.actions;
 export default chatSlice.reducer;

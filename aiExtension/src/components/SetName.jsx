@@ -25,7 +25,7 @@ export default function SetName() {
                 <CircleUserRound /><span> What is Your Name ?</span>
             </h1>
             <div className='bg-secondary-100 shadow-sm shadow-primary-100 rounded-md p-4'>
-                <div className='flex flex-col space-y-2'>
+                <form className='flex flex-col space-y-2'>
                     <label className='text-white flex flex-row items-center space-x-2'>
                         <Mail size={20} /><span>First Name</span>
                     </label>
@@ -40,11 +40,12 @@ export default function SetName() {
                     />
                     <button
                         onClick={handleSignIn}
+                        type='submit'
                         className='w-full font-kanit text-white bg-primary-300 p-2 rounded-md shadow-md hover:shadow-primary-100 focus:outline-none hover:bg-primary-100 transition-colors ease-linear hover:text-primary-500 hover:font-semibold'
                     >
                         Save
                     </button>
-                </div>
+                </form>
             </div>
         </div>
     );

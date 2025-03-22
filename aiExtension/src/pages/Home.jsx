@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react'
 import { Send } from 'lucide-react';
 import client from '../service/axioxClient';
 import { useSelector } from 'react-redux';
-import { promptFailure, promptStart, promptSuccess } from '../app/Prompt/PromptSlice';
-import { addMessage, chatFailure, chatInitiate } from '../app/Chat/ChatSlice';
+import { addMessage, chatFailure, chatInitiate, scrapeStart } from '../app/Chat/ChatSlice';
 import { useDispatch } from 'react-redux';
 import "./Home.css";
 import Topbar from '../components/Topbar.jsx';
 import Chat from '../components/Chat.jsx';
+import { setContext } from '../app/Setting/SettingSlice.js';
 
 // Showing The Response From Ai In The Frontend in Typewriter Effect
 function useTypewriterEffect(text, speed = 50) {
@@ -34,43 +34,25 @@ function useTypewriterEffect(text, speed = 50) {
 export default function Home() {
     const chat = useSelector(state => state.chat);
     const setting = useSelector(state => state.setting)
-    console.log(setting);
-    console.log(chat);
     const dispatch = useDispatch();
-    const [request, setRequest] = useState({});
     const [response, setResponse] = useState("");
     const [prompt, setPrompt] = useState('');
-    const [model, setModel] = useState('Auto');
     const [links, setLinks] = useState(false);
     const [qa, setQA] = useState(false);
     const [loadingMessage, setLoadingMessage] = useState('');
     const [tabUrl, setTabUrl] = useState();
-    console.log(links)
+
 
     // Response Show Case 
     const displayedLoadingMessage = useTypewriterEffect(loadingMessage, 50);
     const [fadeIn, setFadeIn] = useState(false);
 
-    //    Handle Magic Button Click
-    useEffect(() => {
-        const magicButton = document.getElementById('magicButton');
-        if (magicButton) {
-            magicButton.addEventListener('click', startScraping);
-        }
-
-        return () => {
-            if (magicButton) {
-                magicButton.removeEventListener('click', startScraping);
-            }
-        };
-
-    }, []);
     // Start Scrapping When Magic Button Clicked
     const startScraping = async () => {
         try {
             chrome.runtime.sendMessage({ action: "startScraping" }, async (response) => {
                 if (response.success) {
-                    dispatch(chatInitiate());
+                    dispatch(scrapeStart());
                     const messages = [
                         'Preparing your insights...',
                         'Unveiling patterns...',
@@ -84,8 +66,7 @@ export default function Home() {
                         messageIndex = (messageIndex + 1) % messages.length;
                     }, 3000);
                     try {
-                        const res = await client.post('/api/v0/scrape/webscrape', { model: setting.model, type: "chat", url: response.url, links, qa });
-                        console.log('First response:', res);
+                        const res = await client.post('/api/v0/scrape/webscrape', { model: setting.model, url: response.url, links, qa });
                         dispatch(addMessage(res.data))
                         setFadeIn(true);
                         setTimeout(() => setFadeIn(false), 3000);
@@ -140,9 +121,13 @@ export default function Home() {
 
         try {
             dispatch(addMessage({ role: 'User', content: prompt }));
-            const response = await client.post('/api/v0/chat/gpt-4o-mini', { model: setting.model, type: "chat", links, qa, prompt })
+            const response = await client.post('/api/v0/chat/gpt-4o-mini', {
+                model: setting.model,
+                context: setting.context,
+                prompt,
+                contextData: chat.messages[0]
+            });
             setPrompt('');
-            console.log("Hello chat started")
             dispatch(addMessage(response.data));
             console.log(response.data);
             setFadeIn(true);
@@ -172,16 +157,25 @@ export default function Home() {
                     <div className='flex flex-row items-center w-full justify-between bg-secondary-100 space-y-2 rounded-bl-md rounded-br-md p-2'>
                         <div className='flex items-center justify-center space-x-2'>
                             <button
-                                className={`${links ? 'bg-primary-100 text-black border-primary-100 border' : 'border-black'} border  rounded-full font-kanit px-3 py-1 text-white hover:bg-primary-100 hover:text-black`}
+                                className={`${links ? 'bg-primary-100 text-black border-primary-100 border' : 'border-black'} ${setting.context ? 'opacity-50 cursor-not-allowed' : 'hover:bg-primary-100 hover:text-black'} border  rounded-full font-kanit px-3 py-1 text-white`}
                                 onClick={() => setLinks(!links)}
+                                disabled={setting.context}
                             >
                                 Links
                             </button>
                             <button
-                                className={`${qa ? 'bg-primary-100 text-black border-primary-100 border' : 'border-black'} border  rounded-full font-kanit px-3 py-1 text-white hover:bg-primary-100 hover:text-black`}
+                                className={`${qa ? 'bg-primary-100 text-black border-primary-100 border' : 'border-black'} border rounded-full font-kanit px-3 py-1 text-white ${setting.context ? 'opacity-50 cursor-not-allowed' : 'hover:bg-primary-100 hover:text-black'}`}
                                 onClick={() => setQA(!qa)}
+                                disabled={setting.context}
                             >
                                 Q&A
+                            </button>
+                            <button
+                                className={`${setting.context ? 'bg-primary-100 text-black border-primary-100 border' : 'border-black'} ${qa ? 'cursor-not-allowed opacity-50' : 'hover-bg-primary-100 hover:text-black '} border hover:bg-primary-100  rounded-full font-kanit px-3 py-1 text-white`}
+                                onClick={() => dispatch(setContext())}
+                                disabled={qa}
+                            >
+                                Context
                             </button>
                         </div>
                         <div className='flex items-center justify-center space-x-2'>

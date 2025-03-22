@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
     model: 'Auto',
     isSidebarVisible: false,
-    chat: false,
+    context: false,
     fullPageScan: false,
     viewScan: false,
     socialMedia: false,
@@ -16,6 +16,9 @@ const settingSlice = createSlice({
         setModel: (state, action) => {
             state.model = action.payload;
         },
+        setContext: (state) => {
+            state.context = !state.context;
+        },
         clearData: (state) => {
             state.model = "Auto";
             state.isSidebarVisible = false;
@@ -27,5 +30,5 @@ const settingSlice = createSlice({
     }
 })
 
-export const { setModel, clearData } = settingSlice.actions;
+export const { setModel, clearData, setContext } = settingSlice.actions;
 export default settingSlice.reducer;

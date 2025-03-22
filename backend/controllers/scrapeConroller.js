@@ -16,18 +16,14 @@ const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 export const webScrape = async (req, res) => {
     const { url, links, model, qa } = req.body;
     console.log(req.body);
-    console.log('Url:', url);
-    console.log('Link', typeof links);
-
     try {
         let allLinks = [];
         if (links === true) {
             // Get All The link From Web Page 
-            console.log("running");
             allLinks = await getLinks(url);
-            console.log(allLinks);
             res.json({ role: "Link", content: allLinks });
             return;
+
         } else {
             // Step 1 :- Get The Data From Website 
             console.log("Scraping Started....")
@@ -40,9 +36,12 @@ export const webScrape = async (req, res) => {
             // Step 3 :- Summarize The Data filtered Data
             console.log("Summarizing Started....")
             const summarizedData = await summarizeData(model, filteredData);
+            if (qa) {
+                console.log("QA Started......")
+                const qaResponse = await handleQa(summarizedData, model);
+                res.json({ role: "Ai", content: qaResponse });
+            }
             console.log("Scraping Done....")
-            // { role: "user", content: "Hello, AI!" }
-            console.log(summarizedData)
             res.json({ role: "Ai", content: summarizedData });
         }
 
@@ -214,5 +213,36 @@ ${filteredData}
     }
 }
 
-
+const handleQa = async (data, model) => {
+    try {
+        const qaPrompt = `
+        Please process the following set of questions:
+        1. First, categorize each question as either multiple-choice or subjective.
+        2. Then answer each question in its appropriate format:
+        - For multiple-choice questions: Select the correct option (A, B, C, or D) and briefly explain your choice.
+        - For subjective questions: Provide a complete answer in simple, clear language.
+        Questions:
+       ${data}
+`
+        if (model === "gpt") {
+            console.log("GPT Model Selected");
+            const response = await gpt(qaPrompt);
+            console.log(response);
+            return response;
+        }
+        else if (model === "gemini") {
+            console.log("Gemini Model Selected");
+            const response = await gemini(qaPrompt);
+            console.log(response);
+            return response;
+        } else {
+            console.log("Both Models Selected");
+            const response = await gpt(qaPrompt);
+            console.log(response);
+            return response;
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
 
