@@ -4,25 +4,21 @@ import ReactMarkdown from 'react-markdown';
 import remarkBreaks from 'remark-breaks';
 import remarkGfm from 'remark-gfm'
 import Cube from './Cube';
+import Bar from './graph/Bar';
 
 export default function Chat() {
     const messages = useSelector(state => state.chat.messages);
-    console.log(messages)
-
+    const sampleData = [
+        { name: "A", value: 30 },
+        { name: "B", value: 80 },
+        { name: "C", value: 45 },
+        { name: "D", value: 60 },
+        { name: "E", value: 20 },
+        { name: "F", value: 90 }
+    ];
     return (
         <>
-            {/* <div className='p-4 text-white text-kanit'>
-                {messages.map((msg, index) => {
-                    return (
-                        <pre key={index}>
-                            <Markdown>
-                                {msg.content}
-                            </Markdown>
 
-                        </pre>
-                    )
-                })}
-            </div> */}
             <div className='flex-grow p-4 overflow-auto custom-scrollbar'>
                 {messages.length > 0 ?
                     <div className="text-white">
@@ -77,7 +73,8 @@ export default function Chat() {
                         ))}
                     </div>
                     :
-                    <Cube />
+                    // <Cube />
+                    <Bar data={sampleData} />
                 }
 
             </div>
