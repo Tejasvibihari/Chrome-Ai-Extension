@@ -100,7 +100,7 @@ export default function Bar({ d, width = 400, height = 400 }) {
 
     return (
         <>
-            <div className="border border-primary-100 p-2 rounded-md w-auto flex-grow overflow-auto ">
+            <div className="border mt-4 border-primary-100 p-2 rounded-md w-auto flex-grow overflow-auto ">
                 <svg ref={svgRef} className="w-full"></svg>
                 <p className="text-white font-kanit break-words w-full">
                     <span className="font-kanit text-primary-100">Description :- </span>

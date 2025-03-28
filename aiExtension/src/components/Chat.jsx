@@ -6,6 +6,7 @@ import remarkGfm from 'remark-gfm'
 import Cube from './Cube';
 import Bar from './graph/Bar';
 import Area from './graph/Area';
+import Pie from './graph/Pie';
 
 export default function Chat() {
     const messages = useSelector(state => state.chat.messages);
@@ -26,7 +27,74 @@ export default function Chat() {
             return null; // Return null if parsing fails
         }
     };
-
+    const data = [
+        {
+            "chartTitle": "Types of Robots",
+            "chartType": "pie",
+            "description": "Distribution of different types of robots in various industries.",
+            "labels": [
+                "Humanoid Robots",
+                "Cobots",
+                "Industrial Robots",
+                "Medical Robots",
+                "Agricultural Robots",
+                "Microrobotics",
+                "Augmenting Robots",
+                "Software Bots"
+            ],
+            "data": [
+                10,
+                15,
+                25,
+                20,
+                10,
+                5,
+                10,
+                5
+            ]
+        },
+        {
+            "chartTitle": "Pros and Cons of Robotics",
+            "chartType": "bar",
+            "description": "Comparison of the pros and cons associated with robotics.",
+            "xAxisLabel": "Aspects",
+            "yAxisLabel": "Count",
+            "data": [
+                {
+                    "aspect": "Increased Accuracy",
+                    "count": 1
+                },
+                {
+                    "aspect": "Enhanced Productivity",
+                    "count": 1
+                },
+                {
+                    "aspect": "Improved Safety",
+                    "count": 1
+                },
+                {
+                    "aspect": "Job Losses",
+                    "count": -1
+                },
+                {
+                    "aspect": "Limited Creativity",
+                    "count": -1
+                },
+                {
+                    "aspect": "Data Security Risks",
+                    "count": -1
+                },
+                {
+                    "aspect": "Maintenance Costs",
+                    "count": -1
+                },
+                {
+                    "aspect": "Environmental Waste",
+                    "count": -1
+                }
+            ]
+        }
+    ]
     return (
         <div className='flex-grow p-4 overflow-auto custom-scrollbar'>
             {messages.length > 0 ? (
@@ -87,13 +155,15 @@ export default function Chat() {
                             return (
                                 <div key={index} className="p-3 my-2 rounded-lg">
                                     {parsedJson ? (
-                                        // Render the parsed JSON as a string or use it to render a graph
-                                        <pre style={{ color: "white", padding: "1em", borderRadius: "4px" }}>
-                                            {/* <Area s={data} /> */}
+
+                                        <div style={{ color: "white", padding: "1em", borderRadius: "4px", marginBottom: "4px" }}>
                                             {parsedJson.charts.map((d, i) =>
                                                 d.chartType === "bar" ? <Bar key={i} d={d} /> : null
                                             )}
-                                        </pre>
+                                            {parsedJson.charts.map((d, i) =>
+                                                d.chartType === "pie" ? <Pie key={i} d={d} /> : null
+                                            )}
+                                        </div>
                                     ) : (
                                         <p style={{ color: "red" }}>Invalid JSON</p>
                                     )}
@@ -102,6 +172,7 @@ export default function Chat() {
                         }
                         return null; // Return null if message.graph does not exist
                     })}
+                    {/* <Pie d={data[0]} /> */}
                 </div>
 
             ) : (
