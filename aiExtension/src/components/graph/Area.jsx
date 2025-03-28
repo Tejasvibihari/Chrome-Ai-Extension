@@ -1,7 +1,13 @@
+
 import React from 'react'
 
-export default function Area() {
+export default function Area({ s }) {
+    console.log(s, "ssss")
+
+    console.log(s[0]);
     return (
-        <div>Area</div>
+        <div>
+            HELLO
+        </div>
     )
 }

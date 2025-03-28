@@ -68,6 +68,7 @@ export default function Home() {
                     try {
                         const res = await client.post('/api/v0/scrape/webscrape', { model: setting.model, url: response.url, links, qa });
                         dispatch(addMessage(res.data))
+                        console.log(res.data);
                         setFadeIn(true);
                         setTimeout(() => setFadeIn(false), 3000);
                     } catch (error) {

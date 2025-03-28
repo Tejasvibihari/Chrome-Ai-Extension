@@ -2,7 +2,8 @@ import puppeteer from 'puppeteer';
 import dotenv from "dotenv";
 import OpenAI from 'openai';
 import { GoogleGenerativeAI } from "@google/generative-ai";
-
+// import { aiPrompt } from './summarizationPrompt.js';
+// console.log(aiPrompt);
 dotenv.config();
 const OpenAI_API_KEY = process.env.OPENAI_API_KEY;
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
@@ -36,13 +37,17 @@ export const webScrape = async (req, res) => {
             // Step 3 :- Summarize The Data filtered Data
             console.log("Summarizing Started....")
             const summarizedData = await summarizeData(model, filteredData);
+            console.log("Graph Creation Started....")
+            const graphData = await createGraph(filteredData);
             if (qa) {
                 console.log("QA Started......")
                 const qaResponse = await handleQa(summarizedData, model);
                 res.json({ role: "Ai", content: qaResponse });
             }
             console.log("Scraping Done....")
-            res.json({ role: "Ai", content: summarizedData });
+            console.log(summarizeData, "Response Data")
+
+            res.json({ role: "Ai", content: summarizedData, graph: graphData });
         }
 
     } catch (error) {
@@ -69,7 +74,7 @@ const gpt = async (prompt) => {
                 },
             ],
         });
-        console.log(completion.choices[0].message.content)
+        // console.log(completion.choices[0].message.content)
         return completion.choices[0].message.content;
     } catch (error) {
         console.log(error);
@@ -81,7 +86,7 @@ const gpt = async (prompt) => {
 const gemini = async (prompt) => {
     try {
         const result = await model.generateContent(prompt);
-        console.log(result.response.text());
+        // console.log(result.response.text());
         // res.json(result.response.text());
         return result.response.text();
     } catch (error) {
@@ -166,20 +171,18 @@ const filterContent = async (rawData) => {
 
 const summarizeData = async (model, filteredData) => {
     try {
-        const summarizationPrompt = `
-You are an AI assistant that accurately summarizes user-provided content while ensuring that no key points are missed. 
+        const summarizationPrompt = `You are an AI assistant that accurately summarizes user-provided content while ensuring that no key points are missed. 
 The content comes from various sources, such as blogs, news articles, documentation, or other informative materials.
 
 Your Objective:
 - Extract and present the **core information** in a **concise and structured** format.
 - **Do NOT remove or alter** any **important details** from the original content.
-- **Do NOT add** any AI-generated insights, assumptions, or new information.
+- **Add** insights, assumptions, or new information.
 - Ensure the summary is **clear, easy to read, and preserves the meaning** of the original text.
  Guidelines for Summarization:
 Keep all key facts, numbers, names, and essential points
 Maintain the original intent and meaning** of the content.
 Exclude any unnecessary repetition, filler words, or redundant details.
-Do NOT add external explanations, opinions, or extra context  beyond what is provided.
 Use simple, structured formatting (e.g., bullet points, headings, or short paragraphs) for readability.
 
 ### Content to Summarize:
@@ -187,8 +190,8 @@ ${filteredData}
 
 ### Expected Output:
 - A **well-structured summary** that captures all important points.
-- **No missing key details, no extra AI-generated content.**
-`;
+- **No missing key details, Add Extra Content for better understanding.**
+ `;
         if (model === "gpt") {
             console.log("GPT Model Selected");
             const response = await gpt(summarizationPrompt);
@@ -246,3 +249,51 @@ const handleQa = async (data, model) => {
     }
 }
 
+const createGraph = async (data) => {
+    try {
+        const graphPrompt = `
+         Analyze the given data and generate structured graph data in **D3.js-compatible JSON format**.
+        Ensure that the response contains **1 to 3 charts** (depending on the dataset) and provides meaningful insights.
+        Each chart must include:
+        - **chartTitle**: Title of the chart.
+        - **chartType**: Type of chart (e.g., "bar", "line", "pie", "hierarchy").
+        - **description**: Brief description of the chart.
+        - **data**: Structured data for visualization.
+        - **labels**: (For pie charts) Category labels.
+        - **xAxisLabel**, **yAxisLabel**: Labels for bar/line charts.
+        - if there no relevent data to create graph Just return The resopnse like No Graph Is Possible to create
+        Here is the required data:
+        ${data}
+        Example JSON response:
+        {
+          "charts": [
+            {
+              "chartTitle": "Website Traffic Over Time",
+              "chartType": "line",
+              "description": "Daily visitor count on the website.",
+              "xAxisLabel": "Date",
+              "yAxisLabel": "Visitors",
+              "data": [
+                { "date": "2024-03-20", "visitors": 120 },
+                { "date": "2024-03-21", "visitors": 150 }
+              ]
+            },
+            {
+              "chartTitle": "User Engagement by Category",
+              "chartType": "pie",
+              "description": "Percentage of user interactions.",
+              "labels": ["Blog Reads", "Product Views", "Sign-ups", "Purchases"],
+              "data": [50, 30, 10, 10]
+            }
+          ]
+        }
+        `
+        const response = await gpt(graphPrompt);
+        console.log(response);
+        return response;
+
+
+    } catch (error) {
+        console.log(error);
+    }
+}
